@@ -50,6 +50,7 @@ const Login = () => {
           </Navbar.Brand>
           <Nav className="me-auto"></Nav>
           <Nav>
+            <Nav.Link href="/support">Support</Nav.Link>
             <Nav.Link href="/faq">FAQ</Nav.Link>
             <Nav.Link href="/register">Sign Up</Nav.Link>
             <Nav.Link href="/login">Login</Nav.Link>
