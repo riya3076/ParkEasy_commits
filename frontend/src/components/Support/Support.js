@@ -55,6 +55,7 @@ function Support() {
               <Form.Group className="mb-3" controlId="email">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control
+                  style={{ width: "600px" }}
                   type="email"
                   value={emailValue}
                   onChange={handleEmailChange}
@@ -65,6 +66,7 @@ function Support() {
               <Form.Group className="mb-3" controlId="phone">
                 <Form.Label>Phone</Form.Label>
                 <Form.Control
+                  style={{ width: "600px" }}
                   type="tel"
                   required
                   minLength={10}
@@ -82,6 +84,7 @@ function Support() {
               <Form.Group className="mb-3" controlId="textarea">
                 <Form.Label>What's the issue?</Form.Label>
                 <Form.Control
+                  style={{ width: "600px" , height: "200px"}}
                   as="textarea"
                   required
                   rows={3}
