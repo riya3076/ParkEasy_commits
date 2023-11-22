@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "../Home/Home";
 import Login from "../Auth/Login";
 import Register from "../Auth/Registration";
+import Lister from "../Listers/Lister";
 
 const Routing = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/lister" element={<Home />}></Route>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/lister" element={<Lister />}></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/login" element={<Login />}></Route>
       </Routes>

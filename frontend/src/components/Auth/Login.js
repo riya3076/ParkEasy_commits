@@ -45,7 +45,7 @@ const Login = () => {
       <Navbar bg="success" data-bs-theme="dark">
         <Container>
           <Navbar.Brand href="/">
-            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />
+            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
             ParkEasy
           </Navbar.Brand>
           <Nav className="me-auto"></Nav>
