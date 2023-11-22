@@ -7,7 +7,7 @@ async function register(req, res) {
     const { email, username, password } = req.body;
     try {
         await authService.createUser(email, username, password);
-        res.status(201).send({ email: email, username: username, password: password });
+        res.status(201).send({ email: email, username: username });
     } catch (error) {
         res.status(500).send('Error registering user');
     }
@@ -32,7 +32,7 @@ async function login(req, res) {
         }
 
         const token = jwt.sign({ userId: user._id }, 'your_secret_key');
-        res.status(200).json({ token });
+        res.status(200).json({ email: email, username: user.username, token });
     } catch (error) {
         res.status(500).send('Error logging in');
     }
