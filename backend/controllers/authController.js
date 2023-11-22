@@ -1,26 +1,32 @@
 // controllers/authController.js
 const authService = require('../services/authService');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 async function register(req, res) {
-    const { username, password } = req.body;
+    const { email, username, password } = req.body;
     try {
-        await authService.createUser(username, password);
-        res.status(201).send('User registered successfully!');
+        await authService.createUser(email, username, password);
+        res.status(201).send({ email: email, username: username, password: password });
     } catch (error) {
         res.status(500).send('Error registering user');
     }
 }
 
 async function login(req, res) {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     try {
-        const user = await authService.findUserByUsername(username);
+        const user = await authService.findUserByEmail(email);
+        console.log(user)
         if (!user) {
             return res.status(404).send('User not found');
         }
+        console.log('Input password:', password);
+        console.log('Stored password hash:', user.password);
 
         const validPassword = await bcrypt.compare(password, user.password);
+        console.log('Password comparison result:', validPassword);
+          
         if (!validPassword) {
             return res.status(401).send('Invalid password');
         }

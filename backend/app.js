@@ -6,7 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/mydb', {
+mongoose.connect('mongodb+srv://parkeasy123:parkeasy123@userparkeasy.olqblp4.mongodb.net/', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
@@ -24,7 +24,10 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+//const PORT = process.env.PORT || 3000;
+const PORT = 9000
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+// http://localhost:9000/auth/register/
