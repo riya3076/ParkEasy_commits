@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Form, Button, Image, Nav, Navbar, Container } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Image,
+  Nav,
+  Navbar,
+  Container,
+  Spinner,
+  Toast,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/ParkEasy.png";
@@ -8,6 +17,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [isLoginSuccess, setIsLoginSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,22 +33,31 @@ const Login = () => {
     setValidated(true);
 
     try {
+      setLoading(true);
+
       const response = await axios.post("http://localhost:9000/auth/login", {
         email: email,
         password: password,
       });
 
-      // Assuming your server sends back a token upon successful login
       const token = response.data.token;
-      console.log(response);
-      // Store the token in sessionStorage or localStorage
+
       localStorage.setItem("token", token);
       localStorage.setItem("email", email);
-      // Redirect to the desired page after successful login
-      navigate("/");
+      localStorage.setItem("username", response.data.username);
+
+      setIsLoginSuccess(true);
+      setShowToast(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (error) {
       console.error("Login failed:", error);
-      // Handle login failure, show an error message, etc.
+
+      setIsLoginSuccess(false);
+      setShowToast(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,7 +66,7 @@ const Login = () => {
       <Navbar bg="success" data-bs-theme="dark">
         <Container>
           <Navbar.Brand href="/">
-            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />
+            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
             ParkEasy
           </Navbar.Brand>
           <Nav className="me-auto"></Nav>
@@ -63,10 +84,10 @@ const Login = () => {
         validated={validated}
         onSubmit={handleSubmit}
       >
-        <h2>Login </h2>
+        <h2 style={{ color: "#0f6022", fontStyle: "oblique" }}>Login </h2>
         <br />
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label style={{ color: "#348e49" }}>Email address</Form.Label>
           <Form.Control
             style={{ width: "500px" }}
             type="email"
@@ -89,10 +110,42 @@ const Login = () => {
           />
         </Form.Group>
 
-        <Button style={{ marginTop: "10px" }} variant="success" type="submit">
-          Login
+        <Button
+          style={{ marginTop: "10px" }}
+          variant="success"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? (
+            <Spinner animation="border" role="status" variant="light">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          ) : (
+            "Login"
+          )}
         </Button>
       </Form>
+
+      <Toast
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+        }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {isLoginSuccess ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body>
+          {isLoginSuccess
+            ? "Login successful!"
+            : "Login failed. Please check your credentials."}
+        </Toast.Body>
+      </Toast>
     </>
   );
 };

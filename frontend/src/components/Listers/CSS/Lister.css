@@ -1,0 +1,21 @@
+/* Add these styles to your existing CSS or create a new file */
+
+.form-label {
+  font-size: 1.5rem; /* Adjust font size as needed */
+  color: #348e49; /* Green color */
+  font-weight: bold; /* Make the font bold */
+}
+
+.form-input {
+  font-size: 1.2rem; /* Adjust font size as needed */
+}
+
+.submit-button {
+  font-size: 1rem; /* Adjust font size as needed */
+  background-color: #348e49; /* Green color */
+  border-color: #0f6022; /* Green color for border */
+}
+
+.submit-button::hover {
+  background-color: #215a2e;
+}
