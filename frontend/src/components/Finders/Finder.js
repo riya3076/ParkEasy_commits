@@ -18,6 +18,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
+import "../Finders/Finder.css";
 const libraries = ["places"];
 
 const Finder = () => {
@@ -32,15 +33,60 @@ const Finder = () => {
 
   const parkingLocations = [
     {
-      id: 1,
       address: "2080 Quingate Place, Halifax, NS, Canada",
       coordinates: { lat: 44.6472148, lng: -63.59483640000001 },
       duration: "weekly",
       price: "80",
       totalSpots: "2",
       userName: "JohnDoe",
+      email: "johndoe@gmail.com",
+      imageurl:
+        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
     },
-    // Add more parking locations as needed
+    {
+      address: "2080 Quingate Place, Halifax, NS, Canada",
+      coordinates: { lat: 44.6573148, lng: -63.59483640000001 },
+      duration: "weekly",
+      price: "80",
+      totalSpots: "2",
+      userName: "JohnDoe",
+      email: "johndoe@gmail.com",
+      imageurl:
+        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
+    },
+    {
+      address: "2080 Quingate Place, Halifax, NS, Canada",
+      coordinates: { lat: 44.6672148, lng: -63.59483640000001 },
+      duration: "weekly",
+      price: "80",
+      totalSpots: "2",
+      userName: "JohnDoe",
+      email: "johndoe@gmail.com",
+      imageurl:
+        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
+    },
+    {
+      address: "2080 Quingate Place, Halifax, NS, Canada",
+      coordinates: { lat: 44.6172148, lng: -63.59483640000001 },
+      duration: "weekly",
+      price: "80",
+      totalSpots: "2",
+      userName: "JohnDoe",
+      email: "johndoe@gmail.com",
+      imageurl:
+        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
+    },
+    {
+      address: "2080 Quingate Place, Halifax, NS, Canada",
+      coordinates: { lat: 44.6272148, lng: -63.59483640000001 },
+      duration: "weekly",
+      price: "80",
+      totalSpots: "2",
+      userName: "JohnDoe",
+      email: "johndoe@gmail.com",
+      imageurl:
+        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
+    },
   ];
 
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +116,7 @@ const Finder = () => {
     console.log(markers);
     return markers.map((marker) => (
       <Marker
-        key={marker.id}
+        key={marker.userName}
         position={{
           lat: Number(marker.coordinates.lat),
           lng: Number(marker.coordinates.lng),
@@ -82,18 +128,53 @@ const Finder = () => {
 
   const renderParkingList = () => {
     return (
-      <Col xs={3}>
-        <h4>Parking Locations</h4>
-        <ul>
+      <Col xs={4} className="parking-list">
+        <h4 className="mb-4 text-center">Parking Locations</h4>
+        <div
+          className="list-group overflow-auto custom-list-group"
+          style={{ maxHeight: "80vh" }}
+        >
           {parkingLocations.map((location) => (
-            <li key={location.id} onClick={() => handleMarkerClick(location)}>
-              {location.address}
-            </li>
+            <div
+              key={location.userName}
+              onClick={() => handleMarkerClick(location)}
+              className="list-group-item list-group-item-action mb-3 custom-list-item"
+            >
+              <h5 className="mb-2">{location.address}</h5>
+              <div className="d-flex">
+                <img
+                  src={location.imageurl}
+                  alt="Parking Location"
+                  className="img-fluid me-3"
+                  style={{ maxHeight: "150px", objectFit: "cover" }}
+                />
+                <div>
+                  <ul className="list-unstyled">
+                    <li>
+                      <strong>Username:</strong> {location.userName}
+                    </li>
+                    <li>
+                      <strong>Email:</strong> {location.email}
+                    </li>
+                    <li>
+                      <strong>Duration:</strong> {location.duration}
+                    </li>
+                    <li>
+                      <strong>Price:</strong> {location.price} CAD
+                    </li>
+                    <li>
+                      <strong>Total Spots:</strong> {location.totalSpots}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </Col>
     );
   };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setMarkers(parkingLocations);
@@ -202,11 +283,11 @@ const Finder = () => {
       <Container fluid>
         <Row>
           {isLoaded && renderParkingList()}
-          <Col xs={9}>
+          <Col xs={8} style={{ marginTop: "20px" }}>
             {isLoaded && (
               <GoogleMap
                 mapContainerStyle={{
-                  height: "100vh",
+                  height: "85vh",
                   width: "100%",
                 }}
                 center={{
@@ -226,10 +307,29 @@ const Finder = () => {
                     }}
                     onCloseClick={handleInfoWindowClose}
                   >
-                    <Card>
+                    <Card className="custom-card">
                       <Card.Body>
-                        <Card.Title>{selectedMarker.userName}</Card.Title>
-                        {/* Add more details about the parking location */}
+                        <Card.Title className="custom-title">
+                          {selectedMarker.userName}
+                        </Card.Title>
+                        <ul className="list-unstyled">
+                          <li>
+                            <strong>Email:</strong> {selectedMarker.email}
+                          </li>
+                          <li>
+                            <strong>Address:</strong> {selectedMarker.address}
+                          </li>
+                          <li>
+                            <strong>Duration:</strong> {selectedMarker.duration}
+                          </li>
+                          <li>
+                            <strong>Price:</strong> {selectedMarker.price} CAD
+                          </li>
+                          <li>
+                            <strong>Total Spots:</strong>{" "}
+                            {selectedMarker.totalSpots}
+                          </li>
+                        </ul>
                       </Card.Body>
                     </Card>
                   </InfoWindow>
