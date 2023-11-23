@@ -18,6 +18,9 @@ import PlacesAutocomplete, {
 import axios from "axios";
 import logo from "../assets/ParkEasy.png";
 import "../Listers/CSS/Lister.css";
+import { storage } from "./Firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const libraries = ["places"];
 
 const Lister = () => {
@@ -28,6 +31,8 @@ const Lister = () => {
   const [totalSpots, setTotalSpots] = useState("");
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("daily");
+
+  const [image, setImage] = useState(null);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyCCW8GIa8MXFBzdmKFWJs5PL77pHIOtJaU",
@@ -101,17 +106,27 @@ const Lister = () => {
   };
 
   const handleSubmit = async () => {
-    // Prepare data for the API call
-    const data = {
-      address,
-      coordinates: selectedLocation,
-      totalSpots,
-      price,
-      duration,
-      // Add more fields as needed
-    };
+    const userName = "helloworld";
 
     try {
+      // Upload image to Firebase Storage
+      const imageRef = ref(storage, `images/${userName}`);
+      await uploadBytes(imageRef, image);
+
+      // Get the URL of the uploaded image
+      const imageUrl = await getDownloadURL(imageRef);
+      console.log(imageUrl);
+
+      // Prepare data for the API call
+      const data = {
+        address,
+        coordinates: selectedLocation,
+        totalSpots,
+        price,
+        duration,
+        imageUrl,
+        userName, // Add the image URL to the data
+      };
       console.log(data);
       // Make an API call using Axios
       const response = await axios.post("YOUR_API_ENDPOINT", data);
@@ -124,6 +139,7 @@ const Lister = () => {
       setPrice("");
       setDuration("daily");
       setSelectedLocation(null);
+      setImage(null);
 
       // Optionally, you can redirect the user to a success page or show a success message
     } catch (error) {
@@ -345,12 +361,20 @@ const Lister = () => {
             </Form.Select>
           </Form.Group>
 
-          {/* Add more form fields as needed (e.g., pictures, description) */}
+          <Form.Group controlId="formImage" className="mb-3">
+            <Form.Label className="form-label">Upload Image:</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="form-input"
+            />
+          </Form.Group>
 
           <Button
             variant="primary"
             onClick={handleSubmit}
-            className="submit-button"
+            className="submit-button mb-3"
           >
             Submit
           </Button>
