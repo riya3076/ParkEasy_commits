@@ -76,7 +76,7 @@ const Home = () => {
             <Button
               variant="success"
               size="lg"
-              onClick={() => navigate("/lister")}
+              onClick={() => navigate("/finder")}
               style={{ marginRight: "10px" }}
             >
               FIND PARKING SPOT
