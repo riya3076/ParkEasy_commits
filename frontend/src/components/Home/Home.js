@@ -41,7 +41,7 @@ const Home = () => {
                 <Nav.Link href="/">Home</Nav.Link>
               </Nav>
               <Nav>
-              <Nav.Link href="/support">Support</Nav.Link>
+                <Nav.Link href="/support">Support</Nav.Link>
                 <Nav.Link href="/faq">FAQ</Nav.Link>
                 <Navbar.Text>
                   {window.localStorage.getItem("email")}
@@ -76,7 +76,7 @@ const Home = () => {
             <Button
               variant="success"
               size="lg"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/lister")}
               style={{ marginRight: "10px" }}
             >
               FIND PARKING SPOT
@@ -84,9 +84,9 @@ const Home = () => {
             <Button
               variant="success"
               size="lg"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/lister")}
             >
-              LIST PARKING SPOT
+              LIST YOUR PARKING SPOT
             </Button>
           </div>
         </>
@@ -147,7 +147,7 @@ const Home = () => {
               size="lg"
               onClick={() => navigate("/register")}
             >
-              LIST PARKING SPOT
+              LIST YOUR PARKING SPOT
             </Button>
           </div>
         </>

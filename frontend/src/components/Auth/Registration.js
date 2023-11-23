@@ -3,7 +3,14 @@ import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Nav, Navbar, NavDropdown, Container, Image } from "react-bootstrap";
+import {
+  Nav,
+  Navbar,
+  NavDropdown,
+  Container,
+  Image,
+  Toast,
+} from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
 import backgroundImage from "../assets/Background.png";
 
@@ -12,8 +19,11 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
 
   const navigate = useNavigate();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -25,25 +35,29 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:9000/auth/register", // Replace with your actual API endpoint
-        {
-          email,
-          username,
-          password,
-        }
-      );
+      const response = await axios.post("http://localhost:9000/auth/register", {
+        email,
+        username,
+        password,
+      });
 
       console.log("Registration successful:", response.data);
       window.localStorage.setItem("email", response.data.email);
+      window.localStorage.setItem("email", response.data.username);
+      // Set state for toast
+      setIsRegistrationSuccess(true);
+      setShowToast(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
       // Redirect to login page after successful registration
-      navigate("/");
     } catch (error) {
       console.error("Registration error:", error);
-
-      // Handle registration error, e.g., display an error message
+      setIsRegistrationSuccess(false);
+      setShowToast(true);
     }
   };
+
   return (
     <>
       <Navbar bg="success" data-bs-theme="dark">
@@ -71,7 +85,7 @@ const Register = () => {
         validated={validated}
         onSubmit={handleSubmit}
       >
-        <h2>Sign Up </h2>
+        <h2 style={{ color: "#0f6022", fontStyle: "oblique" }}>Sign Up </h2>
         <br />
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -131,6 +145,27 @@ const Register = () => {
           Register
         </Button>
       </Form>
+
+      <Toast
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+        }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {isRegistrationSuccess ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body>
+          {isRegistrationSuccess
+            ? "Registration successful!"
+            : "User already exits or server error!"}
+        </Toast.Body>
+      </Toast>
     </>
   );
 };

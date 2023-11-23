@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Row,
@@ -8,6 +8,7 @@ import {
   Nav,
   Image,
   Button,
+  Spinner,
 } from "react-bootstrap";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import PlacesAutocomplete, {
@@ -32,6 +33,17 @@ const Lister = () => {
     googleMapsApiKey: "AIzaSyCCW8GIa8MXFBzdmKFWJs5PL77pHIOtJaU",
     libraries,
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time, you can replace this with your actual loading logic
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(loadingTimeout);
+  }, []);
 
   const defaultCenter = {
     lat: 44.6472148,
@@ -121,21 +133,47 @@ const Lister = () => {
   };
 
   if (loadError) return "Error loading maps";
-  if (!isLoaded) return "Loading Maps";
+  if (!isLoaded || isLoading) {
+    return (
+      <>
+        <Navbar bg="success" data-bs-theme="dark">
+          <Container fluid>
+            <Navbar.Brand href="/">
+              <Image
+                src={logo}
+                style={{ width: "40px", height: "40px" }}
+                fluid
+              />{" "}
+              ParkEasy
+            </Navbar.Brand>
+            <Nav className="me-auto"></Nav>
+            <Nav>
+              <Nav.Link href="/support">Support</Nav.Link>
+              <Nav.Link href="/faq">FAQ</Nav.Link>
+            </Nav>
+          </Container>
+        </Navbar>
+        <div className="d-flex justify-content-center align-items-center vh-100">
+          <Spinner animation="border" role="status" style={{ color: "green" }}>
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      </>
+    );
+  }
 
   return (
-    <div>
+    <>
       <Navbar bg="success" data-bs-theme="dark">
-        <Container>
+        <Container fluid>
           <Navbar.Brand href="/">
             <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
             ParkEasy
           </Navbar.Brand>
           <Nav className="me-auto"></Nav>
           <Nav>
+            <Nav.Link href="/support">Support</Nav.Link>
             <Nav.Link href="/faq">FAQ</Nav.Link>
-            <Nav.Link href="/register">Sign Up</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -179,9 +217,12 @@ const Lister = () => {
       </Row>
       <Row className="justify-content-md-center mt-3">
         <Col xs={12} md={8}>
-          <div style={{}}>
+          <div>
             <GoogleMap
-              mapContainerStyle={{ height: "400px", width: "100%" }}
+              mapContainerStyle={{
+                height: "400px",
+                width: "100%",
+              }}
               center={{
                 lat: selectedLocation?.lat || defaultCenter.lat,
                 lng: selectedLocation?.lng || defaultCenter.lng,
@@ -263,7 +304,7 @@ const Lister = () => {
           </Button>
         </Col>
       </Row>
-    </div>
+    </>
   );
 };
 
