@@ -62,7 +62,7 @@ const Register = () => {
     <>
       <Navbar bg="success" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="/">
+          <Navbar.Brand onClick={() => navigate("/")}>
             <Image
               src={logo}
               style={{ width: "40px", height: "40px" }}
@@ -72,10 +72,10 @@ const Register = () => {
           </Navbar.Brand>
           <Nav className="me-auto"></Nav>
           <Nav>
-            <Nav.Link href="/support">Support</Nav.Link>
-            <Nav.Link href="/faq">FAQ</Nav.Link>
-            <Nav.Link href="/register">Sign Up</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
+            <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>
+            <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+            <Nav.Link onClick={() => navigate("/register")}>Sign Up</Nav.Link>
+            <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
