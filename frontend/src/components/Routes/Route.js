@@ -6,6 +6,7 @@ import Register from "../Auth/Registration";
 import Support from "../Support/Support";
 import Lister from "../Listers/Lister";
 import Finder from "../Finders/Finder";
+import FAQs from "../FAQs/FAQs";
 
 const Routing = () => {
   return (
@@ -13,6 +14,7 @@ const Routing = () => {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/lister" element={<Lister />}></Route>
+        <Route path="/faq" element={<FAQs />}></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/support" element={<Support />}></Route>
