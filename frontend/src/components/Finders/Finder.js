@@ -22,7 +22,9 @@ import "../Finders/Finder.css";
 import { db } from "../Chatting/Firebase1";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import ChatBox from "../Chatting/ChatBox";
-
+import { useNavigate } from "react-router";
+import Feedback from "../Feedback/Feedback";
+import AddFeedback from "../Feedback/AddFeedback";
 const libraries = ["places"];
 const Finder = () => {
   const [map, setMap] = useState(null);
@@ -95,7 +97,6 @@ const Finder = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading time, you can replace this with your actual loading logic
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 500);
@@ -104,7 +105,6 @@ const Finder = () => {
   }, []);
 
   const handleMapClick = () => {
-    // Handle map click event if needed
   };
 
   const handleMarkerClick = (marker) => {
@@ -133,6 +133,24 @@ const Finder = () => {
     setShowChatBox(!showChatBox);
   };
 
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const handleReview = () => {
+    setShowFeedbackModal(true);
+  }
+
+  const handleCloseFeedbackModal = () => {
+    setShowFeedbackModal(false);
+  };
+
+  const [showAddFeedbackModal, setShowAddFeedbackModal] = useState(false);
+  const handleAddReview = () => {
+    setShowAddFeedbackModal(true);
+  }
+
+  const handleAddCloseFeedbackModal = () => {
+    setShowAddFeedbackModal(false);
+  };
+
   const renderParkingList = () => {
     return (
       <Col xs={4} className="parking-list">
@@ -148,7 +166,7 @@ const Finder = () => {
               className="list-group-item list-group-item-action mb-3 custom-list-item"
             >
               <h5 className="mb-2">{location.address}</h5>
-              <div className="d-flex">
+              <div className="d-flex flex-column">
                 <img
                   src={location.imageurl}
                   alt="Parking Location"
@@ -173,9 +191,25 @@ const Finder = () => {
                       <strong>Total Spots:</strong> {location.totalSpots}
                     </li>
                   </ul>
-                  <Button variant="success" onClick={handleMessage}>
-                    Message
-                  </Button>
+                  <div className="d-flex">
+                    <Button variant="success" size="sm" className="mr-auto" onClick={handleMessage}>
+                      Message
+                    </Button>
+                    <Button variant="success" size="sm" onClick={handleReview}>
+                      Reviews
+                    </Button>
+                    <Feedback
+                      showModal={showFeedbackModal}
+                      handleClose={handleCloseFeedbackModal}
+                    />
+                    <Button variant="success" size="sm" onClick={handleAddReview}>
+                      Add Reviews
+                    </Button>
+                    <AddFeedback
+                      showModal={showAddFeedbackModal}
+                      handleClose={handleAddCloseFeedbackModal}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -184,6 +218,7 @@ const Finder = () => {
       </Col>
     );
   };
+  
 
   useEffect(() => {
     const timer = setTimeout(() => {
