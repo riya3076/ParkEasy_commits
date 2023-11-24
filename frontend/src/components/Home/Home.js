@@ -136,7 +136,7 @@ const Home = () => {
                 fontWeight: "bold",
               }}
             >
-              FINDING PARKING SPOT IS NOW EASY
+              FINDING PARKING SPOT MADE EASY
             </h1>
             <Button
               variant="success"
