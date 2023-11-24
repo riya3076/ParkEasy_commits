@@ -19,8 +19,11 @@ import {
 } from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
 import "../Finders/Finder.css";
-const libraries = ["places"];
+import { db } from "../Chatting/Firebase1";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import ChatBox from "../Chatting/ChatBox";
 
+const libraries = ["places"];
 const Finder = () => {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
@@ -125,6 +128,10 @@ const Finder = () => {
       />
     ));
   };
+  const [showChatBox, setShowChatBox] = useState(false);
+  const handleMessage = () => {
+    setShowChatBox(!showChatBox);
+  };
 
   const renderParkingList = () => {
     return (
@@ -166,6 +173,9 @@ const Finder = () => {
                       <strong>Total Spots:</strong> {location.totalSpots}
                     </li>
                   </ul>
+                  <Button variant="success" onClick={handleMessage}>
+                    Message
+                  </Button>
                 </div>
               </div>
             </div>
@@ -181,7 +191,7 @@ const Finder = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [parkingLocations]);
+  }, []);
 
   if (loadError) return "Error loading maps";
   if (!isLoaded || isLoading) {
@@ -338,6 +348,14 @@ const Finder = () => {
             )}
           </Col>
         </Row>
+        {showChatBox && (
+          <ChatBox
+            from="admin123"
+            to="margin123"
+            setShowChatBox={setShowChatBox}
+            showChatBox={showChatBox}
+          />
+        )}
       </Container>
     </>
   );
