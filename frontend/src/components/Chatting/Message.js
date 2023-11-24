@@ -3,7 +3,8 @@ import { Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Message = ({ message, from }) => {
-  const isCurrentUser = from;
+  const currentUser = "admin123";
+  const isCurrentUser = from === currentUser;
 
   return (
     <Card
@@ -12,51 +13,41 @@ const Message = ({ message, from }) => {
         padding: "0.5rem",
         background: isCurrentUser ? "#fff" : "#7cc5d9",
         color: isCurrentUser ? "#1c2c4c" : "#fff",
-        width: "max-content",
-        maxWidth: "calc(100% - 50px)",
+        width: "fit-content",
+        maxWidth: "80%", // Adjust the maximum width as needed
+        marginLeft: isCurrentUser ? "auto" : "0", // Align to right for current user
+        marginRight: isCurrentUser ? "0" : "auto", // Align to left for other user
+        marginTop: "0.5rem", // Add some top margin between messages
         boxShadow: isCurrentUser
-          ? "-1px 1px 1px 1px #88dded"
-          : "-1px 1px 1px 1px #4c768d",
-        display: "flex",
-        alignItems: "flex-start",
-        marginBottom: "0.5rem",
-        height: "18%",
-        overflowWrap: "break-word",
+          ? "-1px 1px 5px 1px #88dded"
+          : "-1px 1px 5px 1px #4c768d",
       }}
     >
-      {!isCurrentUser && (
-        <div
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: isCurrentUser ? "flex-end" : "flex-start",
+        }}
+      >
+        <Card.Title
           style={{
-            marginRight: "0.5rem",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0.5rem",
+            fontWeight: "bold",
+            marginBottom: "0.5rem",
+            fontSize: "0.8rem",
+            color: isCurrentUser ? "#1c2c4c" : "#fff",
           }}
-        />
-      )}
-      <div style={{ marginLeft: isCurrentUser ? "auto" : "0" }}>
-        <Card.Body>
-          <Card.Title
-            style={{
-              fontWeight: "bold",
-              marginBottom: "0.5rem",
-              fontSize: "0.8rem",
-              color: isCurrentUser ? "#1c2c4c" : "#fff",
-            }}
-          >
-            {message.to}
-          </Card.Title>
-          <Card.Text
-            style={{
-              wordBreak: "break-all",
-              fontSize: "0.8rem",
-            }}
-          >
-            {message.message}
-          </Card.Text>
-        </Card.Body>
+        >
+          {message.from}
+        </Card.Title>
+        <Card.Text
+          style={{
+            wordBreak: "break-all",
+            fontSize: "0.8rem",
+          }}
+        >
+          {message.message}
+        </Card.Text>
       </div>
     </Card>
   );

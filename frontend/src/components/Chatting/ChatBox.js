@@ -10,7 +10,8 @@ import {
 import { db } from "./Firebase1";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
-import { Button, Card, Collapse } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
+import { BsX } from "react-icons/bs"; // Import the X icon
 
 const ChatBox = ({ to, from }) => {
   const [messages, setMessages] = useState([]);
@@ -20,9 +21,9 @@ const ChatBox = ({ to, from }) => {
   useEffect(() => {
     const q = query(
       collection(db, "messages"),
-      where("from", "==", from),
-      where("to", "==", to),
-      //  orderBy("createdAt", "desc"),
+      where("from", "in", [from, to]),
+      where("to", "in", [from, to]),
+      orderBy("createdAt", "asc"),
       limit(50)
     );
 
@@ -44,52 +45,63 @@ const ChatBox = ({ to, from }) => {
     }
   }, [messages]);
 
-  const handleToggleChatbox = () => {
-    setIsOpen((prevIsOpen) => !prevIsOpen);
+  const handleCloseChatbox = () => {
+    // Implement any cleanup logic if needed
+    // For example, closing the chatbox can trigger a function to mark messages as read
+    setIsOpen(false);
   };
 
   return (
-    <Card
-      style={{
-        position: "fixed",
-        bottom: "2rem",
-        right: "2rem",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "400px",
-        borderRadius: "8px",
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        background: isOpen ? "#fff" : "#2196f3",
-        color: isOpen ? "#000" : "#fff",
-      }}
-    >
-      <Button onClick={handleToggleChatbox} variant="light">
-        {isOpen ? "Collapse" : "Expand"}
-      </Button>
-      <Collapse in={isOpen}>
-        <div
+    <>
+      {isOpen && (
+        <Card
           style={{
-            width: "100%",
-            height: "300px",
-            overflowY: "auto",
-            marginBottom: "1rem",
+            position: "fixed",
+            bottom: "2rem",
+            right: "2rem",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "400px",
             borderRadius: "8px",
-            padding: "1rem",
-            background: "white",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            background: "#fff",
+            color: "#000",
           }}
         >
-          {messages?.map((message) => (
-            <Message
-              key={message.createdAt}
-              message={message}
-              from={message.from}
-            />
-          ))}
-          <span ref={scroll}></span>
-        </div>
-      </Collapse>
-      {isOpen && <SendMessage scroll={scroll} to={to} from={from} />}
-    </Card>
+          {/* X button to close the chatbox */}
+          <Button
+            onClick={handleCloseChatbox}
+            variant="light"
+            style={{ position: "absolute", top: "0", right: "0" }}
+          >
+            <BsX />
+          </Button>
+
+          <div
+            style={{
+              width: "100%",
+              height: "300px",
+              overflowY: "auto",
+              marginBottom: "1rem",
+              borderRadius: "8px",
+              padding: "1rem",
+              background: "white",
+            }}
+          >
+            {messages?.map((message) => (
+              <Message
+                key={message.createdAt}
+                message={message}
+                from={message.from}
+              />
+            ))}
+            <span ref={scroll}></span>
+          </div>
+
+          <SendMessage scroll={scroll} to={to} from={from} />
+        </Card>
+      )}
+    </>
   );
 };
 
