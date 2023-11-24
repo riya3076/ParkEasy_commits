@@ -13,7 +13,7 @@ import SendMessage from "./SendMessage";
 import { Button, Card } from "react-bootstrap";
 import { BsX } from "react-icons/bs"; // Import the X icon
 
-const ChatBox = ({ to, from }) => {
+const ChatBox = ({ to, from, setShowChatBox, showChatBox }) => {
   const [messages, setMessages] = useState([]);
   const [isOpen, setIsOpen] = useState(true);
   const scroll = useRef();
@@ -32,7 +32,7 @@ const ChatBox = ({ to, from }) => {
       QuerySnapshot.forEach((doc) => {
         fetchedMessages.push({ ...doc.data(), id: doc.id });
       });
-      console.log(fetchedMessages);
+
       setMessages(fetchedMessages);
     });
 
@@ -46,8 +46,7 @@ const ChatBox = ({ to, from }) => {
   }, [messages]);
 
   const handleCloseChatbox = () => {
-    // Implement any cleanup logic if needed
-    // For example, closing the chatbox can trigger a function to mark messages as read
+    setShowChatBox(!showChatBox);
     setIsOpen(false);
   };
 
@@ -66,12 +65,13 @@ const ChatBox = ({ to, from }) => {
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
             background: "#fff",
             color: "#000",
+            border: "2px solid green",
           }}
         >
-          {/* X button to close the chatbox */}
           <Button
             onClick={handleCloseChatbox}
-            variant="light"
+            variant="danger"
+            size="sm"
             style={{ position: "absolute", top: "0", right: "0" }}
           >
             <BsX />

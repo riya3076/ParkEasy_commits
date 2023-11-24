@@ -11,16 +11,16 @@ const Message = ({ message, from }) => {
       style={{
         borderRadius: isCurrentUser ? "20px 20px 0 20px" : "20px 20px 20px 0",
         padding: "0.5rem",
-        background: isCurrentUser ? "#fff" : "#7cc5d9",
+        background: isCurrentUser ? "#fff" : "#348e49",
         color: isCurrentUser ? "#1c2c4c" : "#fff",
         width: "fit-content",
-        maxWidth: "80%", // Adjust the maximum width as needed
-        marginLeft: isCurrentUser ? "auto" : "0", // Align to right for current user
-        marginRight: isCurrentUser ? "0" : "auto", // Align to left for other user
-        marginTop: "0.5rem", // Add some top margin between messages
+        maxWidth: "80%",
+        marginLeft: isCurrentUser ? "auto" : "0",
+        marginRight: isCurrentUser ? "0" : "auto",
+        marginTop: "0.5rem",
         boxShadow: isCurrentUser
-          ? "-1px 1px 5px 1px #88dded"
-          : "-1px 1px 5px 1px #4c768d",
+          ? "-1px 1px 5px 1px #348e49"
+          : "-1px 1px 5px 1px #348e49",
       }}
     >
       <div

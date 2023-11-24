@@ -348,7 +348,14 @@ const Finder = () => {
             )}
           </Col>
         </Row>
-        {showChatBox && <ChatBox from="admin123" to="margin123" />}
+        {showChatBox && (
+          <ChatBox
+            from="admin123"
+            to="margin123"
+            setShowChatBox={setShowChatBox}
+            showChatBox={showChatBox}
+          />
+        )}
       </Container>
     </>
   );
