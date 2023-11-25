@@ -96,7 +96,9 @@ const Finder = () => {
   };
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const handleReview = () => {
+  const [postId,setPostId]=useState();
+  const handleReview = (id) => {
+    setPostId(id);
     setShowFeedbackModal(true);
   };
 
@@ -105,7 +107,8 @@ const Finder = () => {
   };
 
   const [showAddFeedbackModal, setShowAddFeedbackModal] = useState(false);
-  const handleAddReview = () => {
+  const handleAddReview = (id) => {
+    setPostId(id)
     setShowAddFeedbackModal(true);
   };
 
@@ -163,25 +166,25 @@ const Finder = () => {
                     >
                       Message
                     </Button>
-                    <Button variant="success" size="sm" onClick={handleReview}>
+                    <Button variant="success" size="sm" onClick={()=>handleReview(location._id)}>
                       Reviews
                     </Button>
                     <Feedback
                       showModal={showFeedbackModal}
                       handleClose={handleCloseFeedbackModal}
-                      postId={location._id}
+                      postId={postId}
                     />
                     <Button
                       variant="success"
                       size="sm"
-                      onClick={handleAddReview}
+                      onClick={()=>handleAddReview(location._id)}
                     >
                       Add Reviews
                     </Button>
                     <AddFeedback
                       showModal={showAddFeedbackModal}
                       handleClose={handleAddCloseFeedbackModal}
-                      postId={location._id}
+                      postId={postId}
                     />
                   </div>
                 </div>
