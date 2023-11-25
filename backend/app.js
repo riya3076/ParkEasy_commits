@@ -2,7 +2,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
-const parkingSpotRoutes = require("./routes/parkingSpotRoutes"); // Import the new routes
+const parkingSpotRoutes = require("./routes/parkingSpotRoutes");
+const feedbackRoutes = require('./routes/feedbackRoutes');
 const cors = require("cors");
 
 const app = express();
@@ -32,7 +33,7 @@ app.use("/auth", authRoutes);
 
 // Use the new parking spot routes
 app.use("/api", parkingSpotRoutes); // Assuming you want to use '/api' as the base URL for parking spot APIs
-
+app.use('/feedback', feedbackRoutes);
 // Start the server
 const PORT = 9000;
 app.listen(PORT, () => {

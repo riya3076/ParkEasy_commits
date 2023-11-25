@@ -3,7 +3,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { BsStarFill } from 'react-icons/bs';
 import AddFeedback from './AddFeedback';
 
-const Feedback = ({ showModal, handleClose }) => {
+const Feedback = ({ showModal, handleClose, postId }) => {
   const initialReviews = [
     { name: 'John Doe', rating: 4, text: 'Great product!' },
     { name: 'Jane Smith', rating: 5, text: 'Excellent service!' },
