@@ -30,14 +30,29 @@ const Messages = () => {
         orderBy("createdAt", "asc")
       );
 
-      const querySnapshot = await getDocs(q);
+      const qTo = query(
+        collection(db, "messages"),
+        where("to", "==", currentUser),
+        orderBy("createdAt", "asc")
+      );
 
-      // Extract unique "to" values from the query results
+      const querySnapshotFrom = await getDocs(q);
+      const querySnapshotTo = await getDocs(qTo);
+
+      // Combine results from both queries and extract unique users
       const userList = [];
-      querySnapshot.forEach((doc) => {
+
+      querySnapshotFrom.forEach((doc) => {
         const to = doc.data().to;
-        if (to && !userList.includes(to)) {
+        if (to && to !== currentUser && !userList.includes(to)) {
           userList.push(to);
+        }
+      });
+
+      querySnapshotTo.forEach((doc) => {
+        const from = doc.data().from;
+        if (from && from !== currentUser && !userList.includes(from)) {
+          userList.push(from);
         }
       });
 
