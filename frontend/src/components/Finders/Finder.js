@@ -169,6 +169,7 @@ const Finder = () => {
                     <Feedback
                       showModal={showFeedbackModal}
                       handleClose={handleCloseFeedbackModal}
+                      postId={location._id}
                     />
                     <Button
                       variant="success"
@@ -180,6 +181,7 @@ const Finder = () => {
                     <AddFeedback
                       showModal={showAddFeedbackModal}
                       handleClose={handleAddCloseFeedbackModal}
+                      postId={location._id}
                     />
                   </div>
                 </div>

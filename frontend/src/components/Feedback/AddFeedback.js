@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaStar } from 'react-icons/fa';
-
-const AddFeedback = ({ showModal, handleClose }) => {
+import axios from 'axios';
+const AddFeedback = ({ showModal, handleClose,postId }) => {
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [stars, setStars] = useState(0);
@@ -15,12 +15,23 @@ const AddFeedback = ({ showModal, handleClose }) => {
     console.log('Name:', name);
     console.log('Comment:', comment);
     console.log('Stars:', stars);
+    console.log("postId",postId);
 
-    handleClose();
+    axios.post ('http://localhost:9000/feedback/create', {
+      name,comment,stars,postId
+    })
+    .then((response)=>{
+        console.log('response');
+        handleClose();
+    })
+    .catch((error) =>{
+      console.log(error);
+    } )
+
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose}>
+    <Modal show={showModal} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Add Review</Modal.Title>
       </Modal.Header>
