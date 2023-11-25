@@ -19,13 +19,12 @@ import {
 } from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
 import "../Finders/Finder.css";
-import { db } from "../Chatting/Firebase1";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import ChatBox from "../Chatting/ChatBox";
-import { useNavigate } from "react-router";
 import Feedback from "../Feedback/Feedback";
 import AddFeedback from "../Feedback/AddFeedback";
-const libraries = ["places"];
+import { backendUrl } from "../API/Api";
+import axios from "axios";
+
 const Finder = () => {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
@@ -35,77 +34,31 @@ const Finder = () => {
     googleMapsApiKey: "AIzaSyCCW8GIa8MXFBzdmKFWJs5PL77pHIOtJaU",
     libraries: ["places"],
   });
+  const [parkingLocations, setParkingLocations] = useState([]);
 
-  const parkingLocations = [
-    {
-      address: "2080 Quingate Place, Halifax, NS, Canada",
-      coordinates: { lat: 44.6472148, lng: -63.59483640000001 },
-      duration: "weekly",
-      price: "80",
-      totalSpots: "2",
-      userName: "JohnDoe",
-      email: "johndoe@gmail.com",
-      imageurl:
-        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
-    },
-    {
-      address: "2080 Quingate Place, Halifax, NS, Canada",
-      coordinates: { lat: 44.6573148, lng: -63.59483640000001 },
-      duration: "weekly",
-      price: "80",
-      totalSpots: "2",
-      userName: "JohnDoe",
-      email: "johndoe@gmail.com",
-      imageurl:
-        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
-    },
-    {
-      address: "2080 Quingate Place, Halifax, NS, Canada",
-      coordinates: { lat: 44.6672148, lng: -63.59483640000001 },
-      duration: "weekly",
-      price: "80",
-      totalSpots: "2",
-      userName: "JohnDoe",
-      email: "johndoe@gmail.com",
-      imageurl:
-        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
-    },
-    {
-      address: "2080 Quingate Place, Halifax, NS, Canada",
-      coordinates: { lat: 44.6172148, lng: -63.59483640000001 },
-      duration: "weekly",
-      price: "80",
-      totalSpots: "2",
-      userName: "JohnDoe",
-      email: "johndoe@gmail.com",
-      imageurl:
-        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
-    },
-    {
-      address: "2080 Quingate Place, Halifax, NS, Canada",
-      coordinates: { lat: 44.6272148, lng: -63.59483640000001 },
-      duration: "weekly",
-      price: "80",
-      totalSpots: "2",
-      userName: "JohnDoe",
-      email: "johndoe@gmail.com",
-      imageurl:
-        "https://firebasestorage.googleapis.com/v0/b/ti-parkeasy.appspot.com/o/images%2Fhelloworld?alt=media&token=ae38158a-30c9-42e0-b1e2-7a8237646d40",
-    },
-  ];
-
+  useEffect(() => {
+    axios
+      .get(`${backendUrl}/api/parking-spots`)
+      .then((res) => {
+        console.log(res);
+        setParkingLocations(res.data);
+        setMarkers(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 10);
 
     return () => clearTimeout(loadingTimeout);
   }, []);
 
-  const handleMapClick = () => {
-  };
+  const handleMapClick = () => {};
 
   const handleMarkerClick = (marker) => {
     setSelectedMarker(marker);
@@ -119,7 +72,7 @@ const Finder = () => {
     console.log(markers);
     return markers.map((marker) => (
       <Marker
-        key={marker.userName}
+        key={marker._id}
         position={{
           lat: Number(marker.coordinates.lat),
           lng: Number(marker.coordinates.lng),
@@ -128,15 +81,24 @@ const Finder = () => {
       />
     ));
   };
+
   const [showChatBox, setShowChatBox] = useState(false);
-  const handleMessage = () => {
+  const [chatBoxData, setChatBoxData] = useState();
+
+  const handleMessage = (location) => {
+    const from = localStorage.getItem("username");
+    console.log(location);
+    const to = location ? location.userName : "";
+    console.log(to);
+    console.log(from);
     setShowChatBox(!showChatBox);
+    setChatBoxData({ from, to });
   };
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const handleReview = () => {
     setShowFeedbackModal(true);
-  }
+  };
 
   const handleCloseFeedbackModal = () => {
     setShowFeedbackModal(false);
@@ -145,12 +107,11 @@ const Finder = () => {
   const [showAddFeedbackModal, setShowAddFeedbackModal] = useState(false);
   const handleAddReview = () => {
     setShowAddFeedbackModal(true);
-  }
+  };
 
   const handleAddCloseFeedbackModal = () => {
     setShowAddFeedbackModal(false);
   };
-
   const renderParkingList = () => {
     return (
       <Col xs={4} className="parking-list">
@@ -161,14 +122,14 @@ const Finder = () => {
         >
           {parkingLocations.map((location) => (
             <div
-              key={location.userName}
+              key={location._id}
               onClick={() => handleMarkerClick(location)}
               className="list-group-item list-group-item-action mb-3 custom-list-item"
             >
               <h5 className="mb-2">{location.address}</h5>
               <div className="d-flex flex-column">
                 <img
-                  src={location.imageurl}
+                  src={location.imgUrl}
                   alt="Parking Location"
                   className="img-fluid me-3"
                   style={{ maxHeight: "150px", objectFit: "cover" }}
@@ -192,7 +153,14 @@ const Finder = () => {
                     </li>
                   </ul>
                   <div className="d-flex">
-                    <Button variant="success" size="sm" className="mr-auto" onClick={handleMessage}>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      className="mr-auto"
+                      onClick={() => {
+                        handleMessage(location);
+                      }}
+                    >
                       Message
                     </Button>
                     <Button variant="success" size="sm" onClick={handleReview}>
@@ -202,7 +170,11 @@ const Finder = () => {
                       showModal={showFeedbackModal}
                       handleClose={handleCloseFeedbackModal}
                     />
-                    <Button variant="success" size="sm" onClick={handleAddReview}>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={handleAddReview}
+                    >
                       Add Reviews
                     </Button>
                     <AddFeedback
@@ -218,15 +190,6 @@ const Finder = () => {
       </Col>
     );
   };
-  
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMarkers(parkingLocations);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   if (loadError) return "Error loading maps";
   if (!isLoaded || isLoading) {
@@ -347,8 +310,8 @@ const Finder = () => {
                 {selectedMarker && (
                   <InfoWindow
                     position={{
-                      lat: selectedMarker.coordinates.lat,
-                      lng: selectedMarker.coordinates.lng,
+                      lat: Number(selectedMarker.coordinates.lat),
+                      lng: Number(selectedMarker.coordinates.lng),
                     }}
                     onCloseClick={handleInfoWindowClose}
                   >
@@ -385,8 +348,8 @@ const Finder = () => {
         </Row>
         {showChatBox && (
           <ChatBox
-            from="admin123"
-            to="margin123"
+            from={chatBoxData.from}
+            to={chatBoxData.to}
             setShowChatBox={setShowChatBox}
             showChatBox={showChatBox}
           />
