@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { BsStarFill } from 'react-icons/bs';
 import AddFeedback from './AddFeedback';
+import axios from 'axios';
 
 const Feedback = ({ showModal, handleClose, postId }) => {
-  const initialReviews = [
-    { name: 'John Doe', rating: 4, text: 'Great product!' },
-    { name: 'Jane Smith', rating: 5, text: 'Excellent service!' },
-    { name: 'Bob Johnson', rating: 3, text: 'Average experience.' },
-  ];
-
-  const [reviews, setReviews] = useState(initialReviews);
-
+  const [reviews, setReviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const starColorStyle = { color: 'gold' };
+ 
+  
+    
+  useEffect(() => {
+    console.log(postId);
+    
+     axios.post('http://localhost:9000/feedback/getFeedback', {
+        postId,
+      }).then((response)=>{
+        console.log(response);
+        setReviews(response.data);
+        setIsLoading(false);
+      }).catch( (error) =>{
+      console.error(error);
+      setIsLoading(false);
+    }
+      )}
+  , [postId,showModal]);
 
   return (
     <>
@@ -30,28 +43,31 @@ const Feedback = ({ showModal, handleClose, postId }) => {
               <Modal.Title>Reviews</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {reviews.map((review, index) => (
-                <div key={index} style={{ marginBottom: '10px' }}>
-                  <h6>Name: {review.name}</h6>
-                  <h6>Comments: {review.text}</h6>
-                  <h6>
-                    Rating:{' '}
-                    {[...Array(review.rating)].map((_, i) => (
-                      <BsStarFill key={i} style={starColorStyle} />
-                    ))}
-                  </h6>
-                </div>
-              ))}
+              {isLoading ? (
+                <p>Loading reviews...</p>
+              ) : reviews?.length === 0 ? (
+                <p>No reviews available.</p>
+              ) : (
+                reviews?.map((review, index) => (
+                  <div key={index} style={{ marginBottom: '10px' }}>
+                    <h6>Name: {review.name}</h6>
+                    <h6>Comments: {review.comment}</h6>
+                    <h6>
+                      Rating:{' '}
+                      {[...Array(review.stars)].map((_, i) => (
+                        <BsStarFill key={i} style={starColorStyle} />
+                      ))}
+                    </h6>
+                  </div>
+                ))
+              )}
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose}>
                 Close
               </Button>
-              
             </Modal.Footer>
           </Modal>
-
-          
         </div>
       )}
     </>

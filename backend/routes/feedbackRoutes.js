@@ -4,6 +4,8 @@ const feedbackController = require('../controllers/feedbackController');
 
 // Define feedback routes
 router.post('/create', feedbackController.createFeedback);
-// Add more routes as needed
+ed
+
+router.post('/getFeedback', feedbackController.getFeedbackByPostId);
 
 module.exports = router;
