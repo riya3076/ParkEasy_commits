@@ -44,7 +44,7 @@ const Register = () => {
 
       console.log("Registration successful:", response.data);
       window.localStorage.setItem("email", response.data.email);
-      window.localStorage.setItem("email", response.data.username);
+      window.localStorage.setItem("username", response.data.username);
       // Set state for toast
       setIsRegistrationSuccess(true);
       setShowToast(true);
