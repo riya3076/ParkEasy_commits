@@ -23,6 +23,7 @@ import { storage } from "./Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { backendUrl } from "../API/Api";
 
 const libraries = ["places"];
 
@@ -138,7 +139,7 @@ const Lister = () => {
       };
       console.log(data);
       const response = await axios.post(
-        "http://localhost:9000/api/parking-spots",
+        `${backendUrl}/api/parking-spots`,
         data
       );
       toast.success("Spot posted!", {

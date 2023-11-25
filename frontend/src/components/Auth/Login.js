@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/ParkEasy.png";
+import { backendUrl } from "../API/Api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post("http://localhost:9000/auth/login", {
+      const response = await axios.post(`${backendUrl}/auth/login`, {
         email: email,
         password: password,
       });

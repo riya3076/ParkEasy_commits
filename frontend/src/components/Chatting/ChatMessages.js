@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const Message = ({ message, from }) => {
+const ChatMessages = ({ message, from }) => {
   const currentUser = localStorage.getItem("username");
   const isCurrentUser = from === currentUser;
 
@@ -53,4 +53,4 @@ const Message = ({ message, from }) => {
   );
 };
 
-export default Message;
+export default ChatMessages;

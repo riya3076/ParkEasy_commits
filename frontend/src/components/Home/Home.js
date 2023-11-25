@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Nav, Button, Form, Image } from "react-bootstrap";
+import { Navbar, Nav, Button, Image } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/ParkEasy.png";
@@ -41,6 +41,9 @@ const Home = () => {
                 <Nav.Link href="/">Home</Nav.Link>
               </Nav>
               <Nav>
+                <Nav.Link onClick={() => navigate("/messages")}>
+                  Messages
+                </Nav.Link>
                 <Nav.Link onClick={() => navigate("/support")}>
                   Support
                 </Nav.Link>
