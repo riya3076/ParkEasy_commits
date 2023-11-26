@@ -16,6 +16,18 @@ import { BsX } from "react-icons/bs"; // Import the X icon
 const ChatBox = ({ to, from, setShowChatBox, showChatBox }) => {
   const [messages, setMessages] = useState([]);
   const [isOpen, setIsOpen] = useState(true);
+  const [acceptedOffer, setAcceptedOffer] = useState(null);
+  const [rejectedOffer, setRejectedOffer] = useState(null);
+
+  const handleAcceptOffer = (offerDetails) => {
+    console.log("Offer Accepted:", offerDetails);
+    setAcceptedOffer(offerDetails);
+  };
+  const handleRejectedOffer = (offerDetails) => {
+    console.log("Offer Rejected:", offerDetails);
+    setRejectedOffer(offerDetails);
+  };
+
   const scroll = useRef();
 
   useEffect(() => {
@@ -93,12 +105,20 @@ const ChatBox = ({ to, from, setShowChatBox, showChatBox }) => {
                 key={message.createdAt}
                 message={message}
                 from={message.from}
+                onAcceptOffer={handleAcceptOffer}
+                onRejectOffer={handleRejectedOffer}
               />
             ))}
             <span ref={scroll}></span>
           </div>
 
-          <SendMessage scroll={scroll} to={to} from={from} />
+          <SendMessage
+            scroll={scroll}
+            to={to}
+            from={from}
+            acceptedOffer={acceptedOffer}
+            rejectedOffer={rejectedOffer}
+          />
         </Card>
       )}
     </>
