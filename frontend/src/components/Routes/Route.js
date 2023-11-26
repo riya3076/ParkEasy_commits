@@ -6,6 +6,7 @@ import Register from "../Auth/Registration";
 import Support from "../Support/Support";
 import Lister from "../Listers/Lister";
 import Finder from "../Finders/Finder";
+import Payment from "../Payment/Payment";
 
 const Routing = () => {
   return (
@@ -17,6 +18,7 @@ const Routing = () => {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/support" element={<Support />}></Route>
         <Route path="/finder" element={<Finder />}></Route>
+        <Route path="/payment" element={<Payment />}></Route>
       </Routes>
     </Router>
   );
