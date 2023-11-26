@@ -6,7 +6,6 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import {
-  Form,
   Row,
   Col,
   Navbar,
@@ -24,6 +23,8 @@ import Feedback from "../Feedback/Feedback";
 import AddFeedback from "../Feedback/AddFeedback";
 import { backendUrl } from "../API/Api";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Finder = () => {
   const [map, setMap] = useState(null);
@@ -31,23 +32,40 @@ const Finder = () => {
   const [selectedMarker, setSelectedMarker] = useState(null);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyCCW8GIa8MXFBzdmKFWJs5PL77pHIOtJaU",
+    googleMapsApiKey: process.env.REACT_APP_API_KEY,
     libraries: ["places"],
   });
   const [parkingLocations, setParkingLocations] = useState([]);
+  const [parkLoad, setParkLoad] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     axios
       .get(`${backendUrl}/api/parking-spots`)
       .then((res) => {
-        console.log(res);
-        setParkingLocations(res.data);
-        setMarkers(res.data);
+        if (isMounted) {
+          console.log(res);
+          setParkingLocations(res.data);
+          setMarkers(res.data);
+          setParkLoad(true);
+        }
       })
       .catch((err) => {
+        if (isMounted && !parkLoad) {
+          toast.error("Server error while loading parking spot list!", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          setParkLoad(true);
+        }
         console.log(err);
       });
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [parkLoad]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -96,7 +114,7 @@ const Finder = () => {
   };
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [postId,setPostId]=useState();
+  const [postId, setPostId] = useState();
   const handleReview = (id) => {
     setPostId(id);
     setShowFeedbackModal(true);
@@ -108,7 +126,7 @@ const Finder = () => {
 
   const [showAddFeedbackModal, setShowAddFeedbackModal] = useState(false);
   const handleAddReview = (id) => {
-    setPostId(id)
+    setPostId(id);
     setShowAddFeedbackModal(true);
   };
 
@@ -166,7 +184,11 @@ const Finder = () => {
                     >
                       Message
                     </Button>
-                    <Button variant="success" size="sm" onClick={()=>handleReview(location._id)}>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => handleReview(location._id)}
+                    >
                       Reviews
                     </Button>
                     <Feedback
@@ -177,7 +199,7 @@ const Finder = () => {
                     <Button
                       variant="success"
                       size="sm"
-                      onClick={()=>handleAddReview(location._id)}
+                      onClick={() => handleAddReview(location._id)}
                     >
                       Add Reviews
                     </Button>
@@ -293,9 +315,18 @@ const Finder = () => {
           </Nav>
         </Container>
       </Navbar>
+
       <Container fluid>
+        <ToastContainer />
         <Row>
-          {isLoaded && renderParkingList()}
+          {parkLoad ? (
+            renderParkingList()
+          ) : (
+            <Col xs={4} className="text-center mt-3">
+              <h5>Loading Parking Spot List...</h5>
+              <Spinner animation="border" variant="success" />
+            </Col>
+          )}
           <Col xs={8} style={{ marginTop: "20px" }}>
             {isLoaded && (
               <GoogleMap

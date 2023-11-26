@@ -39,7 +39,6 @@ const Messages = () => {
       const querySnapshotFrom = await getDocs(q);
       const querySnapshotTo = await getDocs(qTo);
 
-      // Combine results from both queries and extract unique users
       const userList = [];
 
       querySnapshotFrom.forEach((doc) => {
@@ -110,7 +109,7 @@ const Messages = () => {
                     key={user}
                     action
                     onClick={() =>
-                      handleUserClick({ id: user, name: `User ${user}` })
+                      handleUserClick({ id: user, name: `${user}` })
                     }
                     active={selectedUser && selectedUser.id === user}
                     style={{
@@ -131,7 +130,7 @@ const Messages = () => {
                     }}
                   >
                     <div style={{ color: "green", fontFamily: "cursive" }}>
-                      {`User ${user}`}
+                      {`${user}`}
                     </div>
                     <div style={{ fontSize: "0.8rem", color: "green" }}>
                       {selectedUser && selectedUser.id === user ? "Active" : ""}

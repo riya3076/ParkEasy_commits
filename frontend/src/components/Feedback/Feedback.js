@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
-import { BsStarFill } from 'react-icons/bs';
-import AddFeedback from './AddFeedback';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Modal, Button } from "react-bootstrap";
+import { BsStarFill } from "react-icons/bs";
+import AddFeedback from "./AddFeedback";
+import axios from "axios";
+import { backendUrl } from "../API/Api";
 
 const Feedback = ({ showModal, handleClose, postId }) => {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const starColorStyle = { color: 'gold' };
- 
-  
-    
+  const starColorStyle = { color: "gold" };
+
   useEffect(() => {
     console.log(postId);
-    
-     axios.post('http://localhost:9000/feedback/getFeedback', {
+
+    axios
+      .post(`${backendUrl}/feedback/getFeedback`, {
         postId,
-      }).then((response)=>{
+      })
+      .then((response) => {
         console.log(response);
         setReviews(response.data);
         setIsLoading(false);
-      }).catch( (error) =>{
-      console.error(error);
-      setIsLoading(false);
-    }
-      )}
-  , [postId,showModal]);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  }, [postId, showModal]);
 
   return (
     <>
@@ -49,11 +50,11 @@ const Feedback = ({ showModal, handleClose, postId }) => {
                 <p>No reviews available.</p>
               ) : (
                 reviews?.map((review, index) => (
-                  <div key={index} style={{ marginBottom: '10px' }}>
+                  <div key={index} style={{ marginBottom: "10px" }}>
                     <h6>Name: {review.name}</h6>
                     <h6>Comments: {review.comment}</h6>
                     <h6>
-                      Rating:{' '}
+                      Rating:{" "}
                       {[...Array(review.stars)].map((_, i) => (
                         <BsStarFill key={i} style={starColorStyle} />
                       ))}

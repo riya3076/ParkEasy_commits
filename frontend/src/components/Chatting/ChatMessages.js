@@ -1,17 +1,61 @@
-import React from "react";
-import { Card } from "react-bootstrap";
+import React, { useState } from "react";
+import { Card, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const ChatMessages = ({ message, from }) => {
+const ChatMessages = ({ message, from, onAcceptOffer, onRejectOffer }) => {
   const currentUser = localStorage.getItem("username");
   const isCurrentUser = from === currentUser;
 
+  const isOfferMessage = /^Offer\s+\d+(\.\d{1,2})?$/.test(message.message);
+  const offerAmount = isOfferMessage ? message.message.split(" ")[1] : null;
+
+  const isAcceptedMessage = /^Accepted/.test(message.message);
+
+  const acceptedAmount = isAcceptedMessage
+    ? /\$\d+(\.\d{1,2})?/.exec(message.message)?.[0] || null
+    : null;
+
+  const isRejectedMessage = /^Rejected/.test(message.message);
+  const rejectedAmount = isRejectedMessage
+    ? /\$\d+(\.\d{1,2})?/.exec(message.message)?.[0] || null
+    : null;
+
+  const [accepted, setAccepted] = useState(false);
+  const [rejected, setRejected] = useState(false);
+
+  const handleAccept = () => {
+    setAccepted(true);
+
+    // Call the callback function to inform the parent component about the accepted offer
+    if (onAcceptOffer) {
+      const offerDetails = {
+        amount: offerAmount || acceptedAmount,
+        sender: message.from,
+        recipient: message.to,
+      };
+      onAcceptOffer(offerDetails);
+    }
+
+    // Additional logic if needed
+  };
+
+  const handleReject = () => {
+    setRejected(true);
+    if (onRejectOffer) {
+      const offerDetails = {
+        amount: offerAmount || rejectedAmount,
+        sender: message.from,
+        recipient: message.to,
+      };
+      onRejectOffer(offerDetails);
+    }
+  };
   return (
     <Card
       style={{
         borderRadius: isCurrentUser ? "20px 20px 0 20px" : "20px 20px 20px 0",
         padding: "0.5rem",
-        background: isCurrentUser ? "#fff" : "#348e49",
+        background: isCurrentUser ? "#fff" : "#35a444",
         color: isCurrentUser ? "#1c2c4c" : "#fff",
         width: "fit-content",
         maxWidth: "80%",
@@ -46,7 +90,39 @@ const ChatMessages = ({ message, from }) => {
             fontSize: "0.8rem",
           }}
         >
-          {message.message}
+          {isOfferMessage ? (
+            <div>
+              <p>{`Offer Amount: $${offerAmount}`}</p>
+              {isCurrentUser ? (
+                <Button variant="success" disabled={accepted}>
+                  {accepted ? "Offer Accepted" : "Offered"}
+                </Button>
+              ) : (
+                <div>
+                  <Button onClick={handleAccept} disabled={accepted}>
+                    Accept
+                  </Button>{" "}
+                  <Button variant="danger" onClick={handleReject}>
+                    Reject
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : isAcceptedMessage ? (
+            <div>
+              <p>{`Accepted Amount: ${acceptedAmount}`}</p>
+              <Button disabled>Offer Accepted</Button>
+            </div>
+          ) : isRejectedMessage ? (
+            <div>
+              <p>{`Rejected Amount: ${rejectedAmount}`}</p>
+              <Button variant="danger" disabled>
+                Offer Rejected
+              </Button>
+            </div>
+          ) : (
+            message.message
+          )}
         </Card.Text>
       </div>
     </Card>

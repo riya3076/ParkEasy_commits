@@ -15,6 +15,18 @@ import ChatMessageSend from "./ChatMessageSend";
 
 const MessageBox = ({ from, to }) => {
   const [messages, setMessages] = useState([]);
+  const [acceptedOffer, setAcceptedOffer] = useState(null);
+  const [rejectedOffer, setRejectedOffer] = useState(null);
+
+  const handleAcceptOffer = (offerDetails) => {
+    console.log("Offer Accepted:", offerDetails);
+    setAcceptedOffer(offerDetails);
+  };
+  const handleRejectedOffer = (offerDetails) => {
+    console.log("Offer Rejected:", offerDetails);
+    setRejectedOffer(offerDetails);
+  };
+
   const scroll = useRef();
 
   useEffect(() => {
@@ -66,11 +78,19 @@ const MessageBox = ({ from, to }) => {
                 key={message.createdAt}
                 message={message}
                 from={message.from}
+                onAcceptOffer={handleAcceptOffer}
+                onRejectOffer={handleRejectedOffer}
               />
             ))}
             <span ref={scroll}></span>
           </div>
-          <ChatMessageSend scroll={scroll} to={to} from={from} />
+          <ChatMessageSend
+            scroll={scroll}
+            to={to}
+            from={from}
+            acceptedOffer={acceptedOffer}
+            rejectedOffer={rejectedOffer}
+          />
         </Card.Body>
       </Card>
     </div>
