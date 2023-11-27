@@ -13,6 +13,7 @@ import {
 } from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
 import backgroundImage from "../assets/Background.png";
+import { backendUrl } from "../API/Api";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:9000/auth/register", {
+      const response = await axios.post(`${backendUrl}/auth/register`, {
         email,
         username,
         password,
@@ -43,7 +44,7 @@ const Register = () => {
 
       console.log("Registration successful:", response.data);
       window.localStorage.setItem("email", response.data.email);
-      window.localStorage.setItem("email", response.data.username);
+      window.localStorage.setItem("username", response.data.username);
       // Set state for toast
       setIsRegistrationSuccess(true);
       setShowToast(true);
@@ -62,7 +63,7 @@ const Register = () => {
     <>
       <Navbar bg="success" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="/">
+          <Navbar.Brand onClick={() => navigate("/")}>
             <Image
               src={logo}
               style={{ width: "40px", height: "40px" }}
@@ -72,10 +73,10 @@ const Register = () => {
           </Navbar.Brand>
           <Nav className="me-auto"></Nav>
           <Nav>
-            <Nav.Link href="/support">Support</Nav.Link>
-            <Nav.Link href="/faq">FAQ</Nav.Link>
-            <Nav.Link href="/register">Sign Up</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
+            <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>
+            <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+            <Nav.Link onClick={() => navigate("/register")}>Sign Up</Nav.Link>
+            <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
           </Nav>
         </Container>
       </Navbar>

@@ -6,7 +6,6 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import {
-  Form,
   Row,
   Col,
   Navbar,
@@ -18,7 +17,14 @@ import {
   Spinner,
 } from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
-const libraries = ["places"];
+import "../Finders/Finder.css";
+import ChatBox from "../Chatting/ChatBox";
+import Feedback from "../Feedback/Feedback";
+import AddFeedback from "../Feedback/AddFeedback";
+import { backendUrl } from "../API/Api";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Finder = () => {
   const [map, setMap] = useState(null);
@@ -26,37 +32,51 @@ const Finder = () => {
   const [selectedMarker, setSelectedMarker] = useState(null);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyCCW8GIa8MXFBzdmKFWJs5PL77pHIOtJaU",
+    googleMapsApiKey: process.env.REACT_APP_API_KEY,
     libraries: ["places"],
   });
+  const [parkingLocations, setParkingLocations] = useState([]);
+  const [parkLoad, setParkLoad] = useState(false);
 
-  const parkingLocations = [
-    {
-      id: 1,
-      address: "2080 Quingate Place, Halifax, NS, Canada",
-      coordinates: { lat: 44.6472148, lng: -63.59483640000001 },
-      duration: "weekly",
-      price: "80",
-      totalSpots: "2",
-      userName: "JohnDoe",
-    },
-    // Add more parking locations as needed
-  ];
+  useEffect(() => {
+    let isMounted = true;
 
+    axios
+      .get(`${backendUrl}/api/parking-spots`)
+      .then((res) => {
+        if (isMounted) {
+          console.log(res);
+          setParkingLocations(res.data);
+          setMarkers(res.data);
+          setParkLoad(true);
+        }
+      })
+      .catch((err) => {
+        if (isMounted && !parkLoad) {
+          toast.error("Server error while loading parking spot list!", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          setParkLoad(true);
+        }
+        console.log(err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [parkLoad]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading time, you can replace this with your actual loading logic
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 10);
 
     return () => clearTimeout(loadingTimeout);
   }, []);
 
-  const handleMapClick = () => {
-    // Handle map click event if needed
-  };
+  const handleMapClick = () => {};
 
   const handleMarkerClick = (marker) => {
     setSelectedMarker(marker);
@@ -70,7 +90,7 @@ const Finder = () => {
     console.log(markers);
     return markers.map((marker) => (
       <Marker
-        key={marker.id}
+        key={marker._id}
         position={{
           lat: Number(marker.coordinates.lat),
           lng: Number(marker.coordinates.lng),
@@ -80,27 +100,123 @@ const Finder = () => {
     ));
   };
 
+  const [showChatBox, setShowChatBox] = useState(false);
+  const [chatBoxData, setChatBoxData] = useState();
+
+  const handleMessage = (location) => {
+    const from = localStorage.getItem("username");
+    console.log(location);
+    const to = location ? location.userName : "";
+    console.log(to);
+    console.log(from);
+    setShowChatBox(!showChatBox);
+    setChatBoxData({ from, to });
+  };
+
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [postId, setPostId] = useState();
+  const handleReview = (id) => {
+    setPostId(id);
+    setShowFeedbackModal(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setShowFeedbackModal(false);
+  };
+
+  const [showAddFeedbackModal, setShowAddFeedbackModal] = useState(false);
+  const handleAddReview = (id) => {
+    setPostId(id);
+    setShowAddFeedbackModal(true);
+  };
+
+  const handleAddCloseFeedbackModal = () => {
+    setShowAddFeedbackModal(false);
+  };
   const renderParkingList = () => {
     return (
-      <Col xs={3}>
-        <h4>Parking Locations</h4>
-        <ul>
+      <Col xs={4} className="parking-list">
+        <h4 className="mb-4 text-center">Parking Locations</h4>
+        <div
+          className="list-group overflow-auto custom-list-group"
+          style={{ maxHeight: "80vh" }}
+        >
           {parkingLocations.map((location) => (
-            <li key={location.id} onClick={() => handleMarkerClick(location)}>
-              {location.address}
-            </li>
+            <div
+              key={location._id}
+              onClick={() => handleMarkerClick(location)}
+              className="list-group-item list-group-item-action mb-3 custom-list-item"
+            >
+              <h5 className="mb-2">{location.address}</h5>
+              <div className="d-flex flex-column">
+                <img
+                  src={location.imgUrl}
+                  alt="Parking Location"
+                  className="img-fluid me-3"
+                  style={{ maxHeight: "150px", objectFit: "cover" }}
+                />
+                <div>
+                  <ul className="list-unstyled">
+                    <li>
+                      <strong>Username:</strong> {location.userName}
+                    </li>
+                    <li>
+                      <strong>Email:</strong> {location.email}
+                    </li>
+                    <li>
+                      <strong>Duration:</strong> {location.duration}
+                    </li>
+                    <li>
+                      <strong>Price:</strong> {location.price} CAD
+                    </li>
+                    <li>
+                      <strong>Total Spots:</strong> {location.totalSpots}
+                    </li>
+                  </ul>
+                  <div className="d-flex">
+                    <Button
+                      variant="success"
+                      size="sm"
+                      className="mr-auto"
+                      onClick={() => {
+                        handleMessage(location);
+                      }}
+                    >
+                      Message
+                    </Button>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => handleReview(location._id)}
+                    >
+                      Reviews
+                    </Button>
+                    <Feedback
+                      showModal={showFeedbackModal}
+                      handleClose={handleCloseFeedbackModal}
+                      postId={postId}
+                    />
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => handleAddReview(location._id)}
+                    >
+                      Add Reviews
+                    </Button>
+                    <AddFeedback
+                      showModal={showAddFeedbackModal}
+                      handleClose={handleAddCloseFeedbackModal}
+                      postId={postId}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </Col>
     );
   };
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMarkers(parkingLocations);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [parkingLocations]);
 
   if (loadError) return "Error loading maps";
   if (!isLoaded || isLoading) {
@@ -199,14 +315,23 @@ const Finder = () => {
           </Nav>
         </Container>
       </Navbar>
+
       <Container fluid>
+        <ToastContainer />
         <Row>
-          {isLoaded && renderParkingList()}
-          <Col xs={9}>
+          {parkLoad ? (
+            renderParkingList()
+          ) : (
+            <Col xs={4} className="text-center mt-3">
+              <h5>Loading Parking Spot List...</h5>
+              <Spinner animation="border" variant="success" />
+            </Col>
+          )}
+          <Col xs={8} style={{ marginTop: "20px" }}>
             {isLoaded && (
               <GoogleMap
                 mapContainerStyle={{
-                  height: "100vh",
+                  height: "85vh",
                   width: "100%",
                 }}
                 center={{
@@ -221,15 +346,34 @@ const Finder = () => {
                 {selectedMarker && (
                   <InfoWindow
                     position={{
-                      lat: selectedMarker.coordinates.lat,
-                      lng: selectedMarker.coordinates.lng,
+                      lat: Number(selectedMarker.coordinates.lat),
+                      lng: Number(selectedMarker.coordinates.lng),
                     }}
                     onCloseClick={handleInfoWindowClose}
                   >
-                    <Card>
+                    <Card className="custom-card">
                       <Card.Body>
-                        <Card.Title>{selectedMarker.userName}</Card.Title>
-                        {/* Add more details about the parking location */}
+                        <Card.Title className="custom-title">
+                          {selectedMarker.userName}
+                        </Card.Title>
+                        <ul className="list-unstyled">
+                          <li>
+                            <strong>Email:</strong> {selectedMarker.email}
+                          </li>
+                          <li>
+                            <strong>Address:</strong> {selectedMarker.address}
+                          </li>
+                          <li>
+                            <strong>Duration:</strong> {selectedMarker.duration}
+                          </li>
+                          <li>
+                            <strong>Price:</strong> {selectedMarker.price} CAD
+                          </li>
+                          <li>
+                            <strong>Total Spots:</strong>{" "}
+                            {selectedMarker.totalSpots}
+                          </li>
+                        </ul>
                       </Card.Body>
                     </Card>
                   </InfoWindow>
@@ -238,6 +382,14 @@ const Finder = () => {
             )}
           </Col>
         </Row>
+        {showChatBox && (
+          <ChatBox
+            from={chatBoxData.from}
+            to={chatBoxData.to}
+            setShowChatBox={setShowChatBox}
+            showChatBox={showChatBox}
+          />
+        )}
       </Container>
     </>
   );

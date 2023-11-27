@@ -6,6 +6,8 @@ import Register from "../Auth/Registration";
 import Support from "../Support/Support";
 import Lister from "../Listers/Lister";
 import Finder from "../Finders/Finder";
+import ChatBox from "../Chatting/ChatBox";
+import Messages from "../Chatting/Messages";
 import FAQs from "../FAQs/FAQs";
 
 const Routing = () => {
@@ -19,6 +21,11 @@ const Routing = () => {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/support" element={<Support />}></Route>
         <Route path="/finder" element={<Finder />}></Route>
+        <Route path="/messages" element={<Messages />}></Route>
+        <Route
+          path="/chat"
+          element={<ChatBox from="admin123" to="margin123" />}
+        ></Route>
       </Routes>
     </Router>
   );

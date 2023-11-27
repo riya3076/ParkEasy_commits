@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Nav, Button, Form, Image } from "react-bootstrap";
+import { Navbar, Nav, Button, Image } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/ParkEasy.png";
@@ -41,14 +41,17 @@ const Home = () => {
                 <Nav.Link href="/">Home</Nav.Link>
               </Nav>
               <Nav>
-                <Nav.Link href="/support">Support</Nav.Link>
-                <Nav.Link href="/faq">FAQ</Nav.Link>
+                <Nav.Link onClick={() => navigate("/messages")}>
+                  Messages
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
                 <Navbar.Text>
                   {window.localStorage.getItem("email")}
                 </Navbar.Text>
-                <Nav.Link onClick={handleLogout} href="/login">
-                  Logout
-                </Nav.Link>
+                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </Nav>
             </Container>
           </Navbar>
@@ -106,10 +109,14 @@ const Home = () => {
                 <Nav.Link href="/">Home</Nav.Link>
               </Nav>
               <Nav>
-                <Nav.Link href="/support">Support</Nav.Link>
-                <Nav.Link href="/faq">FAQ</Nav.Link>
-                <Nav.Link href="/register">Sign Up</Nav.Link>
-                <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Nav.Link onClick={() => navigate("/register")}>
+                  Sign Up
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
               </Nav>
             </Container>
           </Navbar>
