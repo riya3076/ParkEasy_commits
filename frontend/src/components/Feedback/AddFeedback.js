@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { FaStar } from 'react-icons/fa';
-import axios from 'axios';
-const AddFeedback = ({ showModal, handleClose,postId }) => {
-  const [name, setName] = useState('');
-  const [comment, setComment] = useState('');
+import React, { useState } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import { FaStar } from "react-icons/fa";
+import axios from "axios";
+import { backendUrl } from "../API/Api";
+const AddFeedback = ({ showModal, handleClose, postId }) => {
+  const [name, setName] = useState("");
+  const [comment, setComment] = useState("");
   const [stars, setStars] = useState(0);
 
   const handleStarClick = (selectedStars) => {
@@ -12,26 +13,29 @@ const AddFeedback = ({ showModal, handleClose,postId }) => {
   };
 
   const handleSubmit = () => {
-    console.log('Name:', name);
-    console.log('Comment:', comment);
-    console.log('Stars:', stars);
-    console.log("postId",postId);
+    console.log("Name:", name);
+    console.log("Comment:", comment);
+    console.log("Stars:", stars);
+    console.log("postId", postId);
 
-    axios.post ('http://localhost:9000/feedback/create', {
-      name,comment,stars,postId
-    })
-    .then((response)=>{
-        console.log('response');
+    axios
+      .post(`${backendUrl}/feedback/create`, {
+        name,
+        comment,
+        stars,
+        postId,
+      })
+      .then((response) => {
+        console.log("response");
         handleClose();
-    })
-    .catch((error) =>{
-      console.log(error);
-    } )
-
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose} centered>
+    <Modal show={showModal} onHide={handleClose} centered id="3">
       <Modal.Header closeButton>
         <Modal.Title>Add Review</Modal.Title>
       </Modal.Header>
@@ -69,8 +73,8 @@ const AddFeedback = ({ showModal, handleClose,postId }) => {
                     key={index}
                     size={30}
                     onClick={() => handleStarClick(starValue)}
-                    color={starValue <= stars ? '#ffc107' : '#e4e5e9'}
-                    style={{ cursor: 'pointer' }}
+                    color={starValue <= stars ? "#ffc107" : "#e4e5e9"}
+                    style={{ cursor: "pointer" }}
                   />
                 );
               })}

@@ -9,6 +9,7 @@ import Finder from "../Finders/Finder";
 import ChatBox from "../Chatting/ChatBox";
 import Messages from "../Chatting/Messages";
 import FAQs from "../FAQs/FAQs";
+import Payment from "../Payment/Payment";
 
 const Routing = () => {
   return (
@@ -26,6 +27,7 @@ const Routing = () => {
           path="/chat"
           element={<ChatBox from="admin123" to="margin123" />}
         ></Route>
+        <Route path="/payment" element={<Payment />}></Route>
       </Routes>
     </Router>
   );
