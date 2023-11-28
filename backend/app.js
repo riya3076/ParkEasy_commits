@@ -5,6 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const parkingSpotRoutes = require("./routes/parkingSpotRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const supportRoutes = require('./routes/supportRoutes');
 const cors = require("cors");
 
 const app = express();
@@ -36,6 +37,10 @@ app.use("/payment", paymentRoutes);
 // Use the new parking spot routes
 app.use("/api", parkingSpotRoutes); // Assuming you want to use '/api' as the base URL for parking spot APIs
 app.use("/feedback", feedbackRoutes);
+
+// Use the support page
+app.use('/support', supportRoutes);
+
 // Start the server
 const PORT = 9000;
 app.listen(PORT, () => {

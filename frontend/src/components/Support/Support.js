@@ -2,11 +2,17 @@ import React, { useState } from "react";
 import { Nav, Navbar, Form, Button, Container, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/ParkEasy.png";
+import axios from "axios";
+import { backendUrl } from "../API/Api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Support() {
-  const [emailValue, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [phoneValue, setPhone] = useState("");
   const [messageValue, setMessage] = useState("");
+  const [validated, setValidated] = useState(false);
+  const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -19,7 +25,37 @@ function Support() {
     setMessage(event.target.value);
   };
 
-  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    }
+
+    setValidated(true);
+
+    try {
+      const response = await axios.post(`${backendUrl}/support/create`, {
+        email: email,
+        phone: phoneValue,
+        message: messageValue,
+      });
+      toast.success("Successfully Submitted! Our team will contact you soon.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      toast.error("Error while Submitting!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      console.error("Login failed:", error);
+    }
+  };
 
   return (
     <>
@@ -42,6 +78,7 @@ function Support() {
           </Nav>
         </Container>
       </Navbar>
+      <ToastContainer />
       <div>
         <div style={{ margin: "20px" }}>
           <h1>Contact Us</h1>
@@ -49,13 +86,13 @@ function Support() {
           <p style={{ fontSize: "18px" }}>
             Please send us your questions to help you out!
           </p>
-          <Form>
+          <Form validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 style={{ width: "600px" }}
                 type="email"
-                value={emailValue}
+                value={email}
                 onChange={handleEmailChange}
                 required
                 placeholder="Enter email"
