@@ -27,7 +27,7 @@ async function createParkingSpot(req, res) {
         };
 
         const savedSpot = await parkingSpotService.createParkingSpot(formattedData);
-        await axios.post('http://localhost:9000/notifications/createNotification', { Id: email });
+        await axios.post('https://parkeasybackend.onrender.com/notifications/createNotification', { Id: email });
         res.status(201).json(savedSpot);
     } catch (error) {
         res.status(500).json({ error: error.message });

@@ -1,4 +1,4 @@
-// const backendUrl = "https://parkeasybackend.onrender.com";
+const backendUrl = "https://parkeasybackend.onrender.com";
 
-const backendUrl = "http://localhost:9000";
+// const backendUrl = "http://localhost:9000";
 module.exports = { backendUrl };
