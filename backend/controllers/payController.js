@@ -27,6 +27,23 @@ async function payment(req, res) {
   }
 }
 
+async function getPayments(req, res) {
+  const userName = req.params.userName;
+
+  try {
+    const result = await paymentService.getPaymentsByUserName(userName);
+
+    res.status(result.success ? 200 : 500).json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}
+
 module.exports = {
   payment,
+  getPayments,
 };

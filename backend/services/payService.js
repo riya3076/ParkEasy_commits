@@ -46,6 +46,29 @@ async function createPayment(price, address, userName, to, host) {
   }
 }
 
+async function getPaymentsByUserName(userName) {
+  try {
+    const paymentsMade = await Payment.find({ userName });
+    const paymentsReceived = await Payment.find({ to: userName });
+
+    return {
+      success: true,
+      data: {
+        paymentsMade,
+        paymentsReceived,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "Failed to retrieve payments",
+    };
+  }
+}
+
+
 module.exports = {
   createPayment,
+  getPaymentsByUserName,
 };
