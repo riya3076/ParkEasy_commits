@@ -1,12 +1,25 @@
-// controllers/authController.js
 const authService = require('../services/authService');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const {Novu} = require('@novu/node');
 
 async function register(req, res) {
     const { email, username, password } = req.body;
     try {
         await authService.createUser(email, username, password);
+        const novu = new Novu(process.env.NOVU_API_KEY);
+        await novu.subscribers.identify(email, {
+            firstName: username,
+        });
+        // await novu.topics.create({
+        //     key: 'posting-created',
+        //     name: 'user will receive the notification if the posting is created',
+        // });
+
+        await novu.topics.addSubscribers('posting-created', {
+            subscribers: [email],
+        });
+
         res.status(201).send({ email: email, username: username });
     } catch (error) {
         res.status(500).send('Error registering user');

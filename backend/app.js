@@ -7,9 +7,11 @@ const feedbackRoutes = require("./routes/feedbackRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const supportRoutes = require('./routes/supportRoutes');
 const cors = require("cors");
-
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
+const notifRoute = require("./routes/notificationRoutes");
 const app = express();
-
+dotenv.config();
 // Connect to MongoDB
 mongoose
   .connect(
@@ -30,6 +32,9 @@ mongoose
 app.use(express.json());
 app.use(cors());
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.use("/notifications",notifRoute);
 // Use the existing authentication routes
 app.use("/auth", authRoutes);
 app.use("/payment", paymentRoutes);
