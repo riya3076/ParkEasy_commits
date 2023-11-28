@@ -25,6 +25,15 @@ import { backendUrl } from "../API/Api";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faComment,
+  faStar,
+  faPlus,
+  faMoneyBill,
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router";
+import Payment from "../Payment/Payment";
 
 const Finder = () => {
   const [map, setMap] = useState(null);
@@ -38,6 +47,7 @@ const Finder = () => {
   const [parkingLocations, setParkingLocations] = useState([]);
   const [parkLoad, setParkLoad] = useState(false);
 
+  const navigate = useNavigate();
   useEffect(() => {
     let isMounted = true;
 
@@ -125,11 +135,24 @@ const Finder = () => {
   };
 
   const [showAddFeedbackModal, setShowAddFeedbackModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [toName, setToName] = useState();
+  const [address, setAddress] = useState();
+
+  const handlePayment = (location) => {
+    setToName(location.userName);
+    setAddress(location.address);
+    setShowPaymentModal(true);
+  };
+
   const handleAddReview = (id) => {
     setPostId(id);
     setShowAddFeedbackModal(true);
   };
 
+  const handlePaymentCloseModal = () => {
+    setShowPaymentModal(false);
+  };
   const handleAddCloseFeedbackModal = () => {
     setShowAddFeedbackModal(false);
   };
@@ -155,60 +178,79 @@ const Finder = () => {
                   className="img-fluid me-3"
                   style={{ maxHeight: "150px", objectFit: "cover" }}
                 />
-                <div>
-                  <ul className="list-unstyled">
-                    <li>
-                      <strong>Username:</strong> {location.userName}
-                    </li>
-                    <li>
-                      <strong>Email:</strong> {location.email}
-                    </li>
-                    <li>
-                      <strong>Duration:</strong> {location.duration}
-                    </li>
-                    <li>
-                      <strong>Price:</strong> {location.price} CAD
-                    </li>
-                    <li>
-                      <strong>Total Spots:</strong> {location.totalSpots}
-                    </li>
-                  </ul>
-                  <div className="d-flex">
-                    <Button
-                      variant="success"
-                      size="sm"
-                      className="mr-auto"
-                      onClick={() => {
-                        handleMessage(location);
-                      }}
-                    >
-                      Message
-                    </Button>
-                    <Button
-                      variant="success"
-                      size="sm"
-                      onClick={() => handleReview(location._id)}
-                    >
-                      Reviews
-                    </Button>
-                    <Feedback
-                      showModal={showFeedbackModal}
-                      handleClose={handleCloseFeedbackModal}
-                      postId={postId}
-                    />
-                    <Button
-                      variant="success"
-                      size="sm"
-                      onClick={() => handleAddReview(location._id)}
-                    >
-                      Add Reviews
-                    </Button>
-                    <AddFeedback
-                      showModal={showAddFeedbackModal}
-                      handleClose={handleAddCloseFeedbackModal}
-                      postId={postId}
-                    />
-                  </div>
+
+                <ul className="list-unstyled">
+                  <li>
+                    <strong>Username:</strong> {location.userName}
+                  </li>
+                  <li>
+                    <strong>Email:</strong> {location.email}
+                  </li>
+                  <li>
+                    <strong>Duration:</strong> {location.duration}
+                  </li>
+                  <li>
+                    <strong>Price:</strong> {location.price} CAD
+                  </li>
+                  <li>
+                    <strong>Total Spots:</strong> {location.totalSpots}
+                  </li>
+                </ul>
+                <div className="d-flex ">
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="me-1"
+                    onClick={() => {
+                      handleMessage(location);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faComment} /> Message
+                  </Button>
+
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="me-1"
+                    onClick={() => handleReview(location._id)}
+                  >
+                    <FontAwesomeIcon icon={faStar} /> Reviews
+                  </Button>
+
+                  <Feedback
+                    showModal={showFeedbackModal}
+                    handleClose={handleCloseFeedbackModal}
+                    postId={postId}
+                  />
+
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="me-1"
+                    onClick={() => handleAddReview(location._id)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} /> Add Reviews
+                  </Button>
+
+                  <AddFeedback
+                    showModal={showAddFeedbackModal}
+                    handleClose={handleAddCloseFeedbackModal}
+                    postId={postId}
+                  />
+
+                  <Button
+                    variant="success"
+                    size="sm"
+                    onClick={() => handlePayment(location)}
+                  >
+                    <FontAwesomeIcon icon={faMoneyBill} /> Pay
+                  </Button>
+                  <Payment
+                    showPaymentModal={showPaymentModal}
+                    handleClose={handlePaymentCloseModal}
+                    toName={toName}
+                    address={address}
+                  />
                 </div>
               </div>
             </div>

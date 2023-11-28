@@ -12,9 +12,9 @@ import {
 import logo from "../assets/ParkEasy.png";
 import { useNavigate } from "react-router-dom";
 import MessageBox from "./MessageBox";
-
 import { query, collection, where, orderBy, getDocs } from "firebase/firestore";
 import { db } from "./Firebase1";
+import {NotificationBell, NovuProvider, PopoverNotificationCenter} from "@novu/notification-center";
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -66,6 +66,13 @@ const Messages = () => {
     fetchUserList();
   }, []);
 
+  function onNotificationClick(message) {
+
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }
+
   const handleUserClick = (user) => {
     setSelectedUser(user);
   };
@@ -82,6 +89,37 @@ const Messages = () => {
             <Nav.Link href="/">Home</Nav.Link>
           </Nav>
           <Nav>
+            <NovuProvider
+                subscriberId={window.localStorage.getItem("email")}
+                styles={{
+
+                  bellButton: {
+                    root: {
+                      svg: {
+                        color: '#FFFFFF8C',
+                      },
+                    },
+                  },
+                }}
+                applicationIdentifier={'nS45TrQEHee_'}
+                initialFetchingStrategy={{
+                  fetchNotifications: true,
+                  fetchUserPreferences: true,
+                }}
+            >
+              <PopoverNotificationCenter colorScheme="light"
+                                         onNotificationClick={onNotificationClick}
+                                         listItem={(notification) => (
+                                             <div>{notification?.payload?.description}</div>
+                                         )}
+              >
+                {({ unseenCount }) => (
+                    <Nav.Link>
+                      <NotificationBell unseenCount={unseenCount} />
+                    </Nav.Link>
+                )}
+              </PopoverNotificationCenter>
+            </NovuProvider>
             <Nav.Link onClick={() => navigate("/messages")}>Messages</Nav.Link>
             <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>
             <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
