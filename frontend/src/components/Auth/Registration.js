@@ -71,6 +71,9 @@ const Register = () => {
             ></Image>{" "}
             ParkEasy
           </Navbar.Brand>
+          <Nav className="me-auto">
+            <Nav.Link href="/">Home</Nav.Link>
+          </Nav>
           <Nav className="me-auto"></Nav>
           <Nav>
             <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>

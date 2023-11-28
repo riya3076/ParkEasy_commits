@@ -27,10 +27,17 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  NovuProvider,
+  PopoverNotificationCenter,
+  NotificationBell,
+} from "@novu/notification-center";
+import {
   faComment,
   faStar,
   faPlus,
   faMoneyBill,
+  faSignOutAlt,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router";
 import Payment from "../Payment/Payment";
@@ -48,6 +55,7 @@ const Finder = () => {
   const [parkLoad, setParkLoad] = useState(false);
 
   const navigate = useNavigate();
+
   useEffect(() => {
     let isMounted = true;
 
@@ -259,28 +267,127 @@ const Finder = () => {
       </Col>
     );
   };
+  const handleLogout = () => {
+    window.localStorage.clear();
+    window.location.reload();
+    navigate("/login");
+  };
 
+  const [description, setDescription] = useState("");
+
+  function onNotificationClick(message) {
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }
   if (loadError) return "Error loading maps";
   if (!isLoaded || isLoading) {
     return (
       <>
-        <Navbar bg="success" data-bs-theme="dark">
-          <Container fluid>
-            <Navbar.Brand href="/">
-              <Image
-                src={logo}
-                style={{ width: "40px", height: "40px" }}
-                fluid
-              />{" "}
-              ParkEasy
-            </Navbar.Brand>
-            <Nav className="me-auto"></Nav>
-            <Nav>
-              <Nav.Link href="/support">Support</Nav.Link>
-              <Nav.Link href="/faq">FAQ</Nav.Link>
-            </Nav>
-          </Container>
-        </Navbar>
+        {window.localStorage.getItem("email") ? (
+          <>
+            <Navbar bg="success" data-bs-theme="dark">
+              <Container>
+                <Navbar.Brand href="/">
+                  <Image
+                    src={logo}
+                    style={{ width: "40px", height: "40px" }}
+                    fluid
+                  ></Image>{" "}
+                  ParkEasy
+                </Navbar.Brand>
+                <Nav className="me-auto">
+                  <Nav.Link href="/">Home</Nav.Link>
+                </Nav>
+                <Nav>
+                  <NovuProvider
+                    subscriberId={window.localStorage.getItem("email")}
+                    styles={{
+                      bellButton: {
+                        root: {
+                          svg: {
+                            color: "#FFFFFF8C",
+                          },
+                        },
+                      },
+                    }}
+                    applicationIdentifier={"nS45TrQEHee_"}
+                    initialFetchingStrategy={{
+                      fetchNotifications: true,
+                      fetchUserPreferences: true,
+                    }}
+                  >
+                    <PopoverNotificationCenter
+                      colorScheme="light"
+                      onNotificationClick={onNotificationClick}
+                      listItem={(notification) => (
+                        <div>{notification?.payload?.description}</div>
+                      )}
+                    >
+                      {({ unseenCount }) => (
+                        <Nav.Link>
+                          <NotificationBell unseenCount={unseenCount} />
+                        </Nav.Link>
+                      )}
+                    </PopoverNotificationCenter>
+                  </NovuProvider>
+                  <Nav.Link onClick={() => navigate("/paymenthistory")}>
+                    Payments
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/messages")}>
+                    Messages
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/support")}>
+                    Support
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                  <Navbar.Text>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: "0.5rem" }}
+                    />
+                    {window.localStorage.getItem("username")}
+                  </Navbar.Text>
+                  <Nav.Link onClick={handleLogout}>
+                    <FontAwesomeIcon
+                      icon={faSignOutAlt}
+                      style={{ marginRight: "0.5rem" }}
+                    />
+                    Logout
+                  </Nav.Link>
+                </Nav>
+              </Container>
+            </Navbar>
+          </>
+        ) : (
+          <>
+            <Navbar bg="success" data-bs-theme="dark">
+              <Container>
+                <Navbar.Brand href="/">
+                  <Image
+                    src={logo}
+                    style={{ width: "40px", height: "40px" }}
+                    fluid
+                  ></Image>{" "}
+                  ParkEasy
+                </Navbar.Brand>
+                <Nav className="me-auto">
+                  <Nav.Link href="/">Home</Nav.Link>
+                </Nav>
+                <Nav>
+                  <Nav.Link onClick={() => navigate("/support")}>
+                    Support
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                  <Nav.Link onClick={() => navigate("/register")}>
+                    Sign Up
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
+                </Nav>
+              </Container>
+            </Navbar>
+          </>
+        )}
 
         <div class="loader">
           <svg
@@ -344,19 +451,110 @@ const Finder = () => {
 
   return (
     <>
-      <Navbar bg="success" data-bs-theme="dark">
-        <Container fluid>
-          <Navbar.Brand href="/">
-            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
-            ParkEasy
-          </Navbar.Brand>
-          <Nav className="me-auto"></Nav>
-          <Nav>
-            <Nav.Link href="/support">Support</Nav.Link>
-            <Nav.Link href="/faq">FAQ</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      {window.localStorage.getItem("email") ? (
+        <>
+          <Navbar bg="success" data-bs-theme="dark">
+            <Container>
+              <Navbar.Brand href="/">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                ></Image>{" "}
+                ParkEasy
+              </Navbar.Brand>
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
+              <Nav>
+                <NovuProvider
+                  subscriberId={window.localStorage.getItem("email")}
+                  styles={{
+                    bellButton: {
+                      root: {
+                        svg: {
+                          color: "#FFFFFF8C",
+                        },
+                      },
+                    },
+                  }}
+                  applicationIdentifier={"nS45TrQEHee_"}
+                  initialFetchingStrategy={{
+                    fetchNotifications: true,
+                    fetchUserPreferences: true,
+                  }}
+                >
+                  <PopoverNotificationCenter
+                    colorScheme="light"
+                    onNotificationClick={onNotificationClick}
+                    listItem={(notification) => (
+                      <div>{notification?.payload?.description}</div>
+                    )}
+                  >
+                    {({ unseenCount }) => (
+                      <Nav.Link>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </Nav.Link>
+                    )}
+                  </PopoverNotificationCenter>
+                </NovuProvider>
+                <Nav.Link onClick={() => navigate("/paymenthistory")}>
+                  Payments
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/messages")}>
+                  Messages
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Navbar.Text>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  {window.localStorage.getItem("username")}
+                </Navbar.Text>
+                <Nav.Link onClick={handleLogout}>
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  Logout
+                </Nav.Link>
+              </Nav>
+            </Container>
+          </Navbar>
+        </>
+      ) : (
+        <>
+          <Navbar bg="success" data-bs-theme="dark">
+            <Container>
+              <Navbar.Brand href="/">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                ></Image>{" "}
+                ParkEasy
+              </Navbar.Brand>
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
+              <Nav>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Nav.Link onClick={() => navigate("/register")}>
+                  Sign Up
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
+              </Nav>
+            </Container>
+          </Navbar>
+        </>
+      )}
 
       <Container fluid>
         <ToastContainer />

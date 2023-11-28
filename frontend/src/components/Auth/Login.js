@@ -70,6 +70,9 @@ const Login = () => {
             <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
             ParkEasy
           </Navbar.Brand>
+          <Nav className="me-auto">
+            <Nav.Link href="/">Home</Nav.Link>
+          </Nav>
           <Nav className="me-auto"></Nav>
           <Nav>
             <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>

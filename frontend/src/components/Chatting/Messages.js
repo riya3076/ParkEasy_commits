@@ -14,7 +14,13 @@ import { useNavigate } from "react-router-dom";
 import MessageBox from "./MessageBox";
 import { query, collection, where, orderBy, getDocs } from "firebase/firestore";
 import { db } from "./Firebase1";
-import {NotificationBell, NovuProvider, PopoverNotificationCenter} from "@novu/notification-center";
+import {
+  NotificationBell,
+  NovuProvider,
+  PopoverNotificationCenter,
+} from "@novu/notification-center";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -22,6 +28,21 @@ const Messages = () => {
   const [fetchedUsers, setFetchedUsers] = useState([]);
 
   const currentUser = localStorage.getItem("username");
+
+  const handleLogout = () => {
+    window.localStorage.clear();
+
+    console.log("redirecting!!!");
+    navigate("/login");
+  };
+
+  const [description, setDescription] = useState("");
+
+  function onNotificationClick(message) {
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }
   const fetchUserList = async () => {
     try {
       const q = query(
@@ -67,7 +88,6 @@ const Messages = () => {
   }, []);
 
   function onNotificationClick(message) {
-
     if (message?.cta?.data?.url) {
       window.location.href = message.cta.data.url;
     }
@@ -82,7 +102,11 @@ const Messages = () => {
       <Navbar bg="success" data-bs-theme="dark">
         <Container>
           <Navbar.Brand href="/">
-            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />
+            <Image
+              src={logo}
+              style={{ width: "40px", height: "40px" }}
+              fluid
+            ></Image>{" "}
             ParkEasy
           </Navbar.Brand>
           <Nav className="me-auto">
@@ -90,40 +114,56 @@ const Messages = () => {
           </Nav>
           <Nav>
             <NovuProvider
-                subscriberId={window.localStorage.getItem("email")}
-                styles={{
-
-                  bellButton: {
-                    root: {
-                      svg: {
-                        color: '#FFFFFF8C',
-                      },
+              subscriberId={window.localStorage.getItem("email")}
+              styles={{
+                bellButton: {
+                  root: {
+                    svg: {
+                      color: "#FFFFFF8C",
                     },
                   },
-                }}
-                applicationIdentifier={'nS45TrQEHee_'}
-                initialFetchingStrategy={{
-                  fetchNotifications: true,
-                  fetchUserPreferences: true,
-                }}
+                },
+              }}
+              applicationIdentifier={"nS45TrQEHee_"}
+              initialFetchingStrategy={{
+                fetchNotifications: true,
+                fetchUserPreferences: true,
+              }}
             >
-              <PopoverNotificationCenter colorScheme="light"
-                                         onNotificationClick={onNotificationClick}
-                                         listItem={(notification) => (
-                                             <div>{notification?.payload?.description}</div>
-                                         )}
+              <PopoverNotificationCenter
+                colorScheme="light"
+                onNotificationClick={onNotificationClick}
+                listItem={(notification) => (
+                  <div>{notification?.payload?.description}</div>
+                )}
               >
                 {({ unseenCount }) => (
-                    <Nav.Link>
-                      <NotificationBell unseenCount={unseenCount} />
-                    </Nav.Link>
+                  <Nav.Link>
+                    <NotificationBell unseenCount={unseenCount} />
+                  </Nav.Link>
                 )}
               </PopoverNotificationCenter>
             </NovuProvider>
+            <Nav.Link onClick={() => navigate("/paymenthistory")}>
+              Payments
+            </Nav.Link>
             <Nav.Link onClick={() => navigate("/messages")}>Messages</Nav.Link>
             <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>
             <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
-            <Navbar.Text>{window.localStorage.getItem("email")}</Navbar.Text>
+            <Navbar.Text>
+              <FontAwesomeIcon
+                icon={faUser}
+                style={{ marginRight: "0.5rem" }}
+              />
+              {window.localStorage.getItem("username")}
+            </Navbar.Text>
+            <Nav.Link onClick={handleLogout}>
+              <FontAwesomeIcon
+                icon={faSignOutAlt}
+                style={{ marginRight: "0.5rem" }}
+              />
+              Logout
+            </Nav.Link>
           </Nav>
         </Container>
       </Navbar>

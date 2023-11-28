@@ -6,7 +6,13 @@ import axios from "axios";
 import { backendUrl } from "../API/Api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import {
+  NovuProvider,
+  PopoverNotificationCenter,
+  NotificationBell,
+} from "@novu/notification-center";
+import { faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function Support() {
   const [email, setEmail] = useState("");
   const [phoneValue, setPhone] = useState("");
@@ -24,6 +30,19 @@ function Support() {
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
+  const handleLogout = () => {
+    window.localStorage.clear();
+    window.location.reload();
+    navigate("/login");
+  };
+
+  const [description, setDescription] = useState("");
+
+  function onNotificationClick(message) {
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,25 +78,110 @@ function Support() {
 
   return (
     <>
-      <Navbar bg="success" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand onClick={() => navigate("/")}>
-            <Image
-              src={logo}
-              style={{ width: "40px", height: "40px" }}
-              fluid
-            ></Image>{" "}
-            ParkEasy
-          </Navbar.Brand>
-          <Nav className="me-auto">
-            <Nav.Link onClick={() => navigate("/")}>Home</Nav.Link>
-          </Nav>
-          <Nav>
-            <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>
-            <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      {window.localStorage.getItem("email") ? (
+        <>
+          <Navbar bg="success" data-bs-theme="dark">
+            <Container>
+              <Navbar.Brand href="/">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                ></Image>{" "}
+                ParkEasy
+              </Navbar.Brand>
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
+              <Nav>
+                <NovuProvider
+                  subscriberId={window.localStorage.getItem("email")}
+                  styles={{
+                    bellButton: {
+                      root: {
+                        svg: {
+                          color: "#FFFFFF8C",
+                        },
+                      },
+                    },
+                  }}
+                  applicationIdentifier={"nS45TrQEHee_"}
+                  initialFetchingStrategy={{
+                    fetchNotifications: true,
+                    fetchUserPreferences: true,
+                  }}
+                >
+                  <PopoverNotificationCenter
+                    colorScheme="light"
+                    onNotificationClick={onNotificationClick}
+                    listItem={(notification) => (
+                      <div>{notification?.payload?.description}</div>
+                    )}
+                  >
+                    {({ unseenCount }) => (
+                      <Nav.Link>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </Nav.Link>
+                    )}
+                  </PopoverNotificationCenter>
+                </NovuProvider>
+                <Nav.Link onClick={() => navigate("/paymenthistory")}>
+                  Payments
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/messages")}>
+                  Messages
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Navbar.Text>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  {window.localStorage.getItem("username")}
+                </Navbar.Text>
+                <Nav.Link onClick={handleLogout}>
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  Logout
+                </Nav.Link>
+              </Nav>
+            </Container>
+          </Navbar>
+        </>
+      ) : (
+        <>
+          <Navbar bg="success" data-bs-theme="dark">
+            <Container>
+              <Navbar.Brand href="/">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                ></Image>{" "}
+                ParkEasy
+              </Navbar.Brand>
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
+              <Nav>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Nav.Link onClick={() => navigate("/register")}>
+                  Sign Up
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
+              </Nav>
+            </Container>
+          </Navbar>
+        </>
+      )}
       <ToastContainer />
       <div>
         <div style={{ margin: "20px" }}>
