@@ -10,6 +10,7 @@ import {
   Button,
   Spinner,
 } from "react-bootstrap";
+
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import PlacesAutocomplete, {
   geocodeByAddress,
@@ -20,6 +21,9 @@ import logo from "../assets/ParkEasy.png";
 import "../Listers/CSS/Lister.css";
 import { storage } from "./Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { backendUrl } from "../API/Api";
 
 const libraries = ["places"];
 
@@ -40,9 +44,12 @@ const Lister = () => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const userName = localStorage.getItem("username");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
-    // Simulate loading time, you can replace this with your actual loading logic
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
@@ -61,7 +68,6 @@ const Lister = () => {
       lng: e.latLng.lng(),
     });
 
-    // Reverse geocode the clicked location to get the address
     geocodeByAddress(`${e.latLng.lat()}, ${e.latLng.lng()}`)
       .then((results) => setAddress(results[0].formatted_address))
       .catch((error) => console.error("Error reverse geocoding:", error));
@@ -81,7 +87,6 @@ const Lister = () => {
       lng: e.latLng.lng(),
     });
 
-    // Reverse geocode the dragged location to get the address
     geocodeByAddress(`${e.latLng.lat()}, ${e.latLng.lng()}`)
       .then((results) => setAddress(results[0].formatted_address))
       .catch((error) => console.error("Error reverse geocoding:", error));
@@ -94,7 +99,6 @@ const Lister = () => {
   const handleSelect = async (selectedAddress) => {
     setAddress(selectedAddress);
 
-    // Geocode the selected address to get the coordinates
     try {
       const results = await geocodeByAddress(selectedAddress);
       const latLng = await getLatLng(results[0]);
@@ -105,46 +109,59 @@ const Lister = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    const userName = "helloworld";
+  function generateImageId() {
+    const timestamp = new Date().getTime();
+    const randomString = Math.random().toString(36).substring(2);
 
+    const imageId = `${timestamp}-${randomString}`;
+    return imageId;
+  }
+
+  const handleSubmit = async () => {
     try {
-      // Upload image to Firebase Storage
-      const imageRef = ref(storage, `images/${userName}`);
+      setIsSubmitting(true);
+      const imageId = generateImageId();
+      const imageRef = ref(storage, `images/${imageId}`);
       await uploadBytes(imageRef, image);
 
-      // Get the URL of the uploaded image
       const imageUrl = await getDownloadURL(imageRef);
       console.log(imageUrl);
 
-      // Prepare data for the API call
       const data = {
         address,
         coordinates: selectedLocation,
         totalSpots,
         price,
         duration,
-        imageUrl,
-        userName, // Add the image URL to the data
+        imgUrl: imageUrl,
+        userName,
+        email,
       };
       console.log(data);
-      // Make an API call using Axios
-      const response = await axios.post("YOUR_API_ENDPOINT", data);
-
+      const response = await axios.post(
+        `${backendUrl}/api/parking-spots`,
+        data
+      );
+      toast.success("Spot posted!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.log("API Response:", response.data);
 
-      // Reset form after successful submission
       setAddress("");
       setTotalSpots("");
       setPrice("");
       setDuration("daily");
       setSelectedLocation(null);
       setImage(null);
-
-      // Optionally, you can redirect the user to a success page or show a success message
     } catch (error) {
+      toast.error("Server error!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.error("Error submitting form:", error);
-      // Handle error (e.g., show an error message to the user)
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -245,7 +262,7 @@ const Lister = () => {
           </Nav>
         </Container>
       </Navbar>
-
+      <ToastContainer />
       <Row className="justify-content-md-center mt-3">
         <Col xs={12} md={8}>
           <Form.Group controlId="formAddress" className="mt-3">
@@ -375,8 +392,13 @@ const Lister = () => {
             variant="primary"
             onClick={handleSubmit}
             className="submit-button mb-3"
+            disabled={isSubmitting} // Disable the button while submitting
           >
-            Submit
+            {isSubmitting ? (
+              <Spinner animation="border" role="status" />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </Col>
       </Row>

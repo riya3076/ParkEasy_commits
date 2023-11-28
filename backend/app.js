@@ -1,10 +1,11 @@
-// app.js or index.js
+// app.js
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
+const parkingSpotRoutes = require("./routes/parkingSpotRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const cors = require("cors");
-
 
 const app = express();
 
@@ -27,15 +28,16 @@ mongoose
 // Middleware for parsing JSON
 app.use(express.json());
 app.use(cors());
-// Routes
-app.use("/auth", authRoutes);
-app.use("/payment",paymentRoutes);
 
+// Use the existing authentication routes
+app.use("/auth", authRoutes);
+app.use("/payment", paymentRoutes);
+
+// Use the new parking spot routes
+app.use("/api", parkingSpotRoutes); // Assuming you want to use '/api' as the base URL for parking spot APIs
+app.use("/feedback", feedbackRoutes);
 // Start the server
-//const PORT = process.env.PORT || 3000;
 const PORT = 9000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-// http://localhost:9000/auth/register/

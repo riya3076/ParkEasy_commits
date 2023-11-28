@@ -13,6 +13,7 @@ import {
 } from "react-bootstrap";
 import logo from "../assets/ParkEasy.png";
 import backgroundImage from "../assets/Background.png";
+import { backendUrl } from "../API/Api";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:9000/auth/register", {
+      const response = await axios.post(`${backendUrl}/auth/register`, {
         email,
         username,
         password,
@@ -43,7 +44,7 @@ const Register = () => {
 
       console.log("Registration successful:", response.data);
       window.localStorage.setItem("email", response.data.email);
-      window.localStorage.setItem("email", response.data.username);
+      window.localStorage.setItem("username", response.data.username);
       // Set state for toast
       setIsRegistrationSuccess(true);
       setShowToast(true);
