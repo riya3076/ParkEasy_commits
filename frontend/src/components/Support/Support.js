@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import { Nav, Navbar, Form, Button, Container, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/ParkEasy.png";
+import axios from "axios";
+import { backendUrl } from "../API/Api";
 
 function Support() {
-  const [emailValue, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [phoneValue, setPhone] = useState("");
   const [messageValue, setMessage] = useState("");
+  const [validated, setValidated] = useState(false);
+  const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -19,7 +23,38 @@ function Support() {
     setMessage(event.target.value);
   };
 
-  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    }
+
+    setValidated(true);
+
+    try {
+
+      const response = await axios.post(`${backendUrl}/support/create`, {
+        email: email,
+        phoneValue: phoneValue,
+        messageValue: messageValue
+      });
+
+      const token = response.data.token;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("email", email);
+      localStorage.setItem("username", response.data.username);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (error) {
+      console.error("Login failed:", error);
+
+    } 
+  };
 
   return (
     <>
@@ -49,13 +84,16 @@ function Support() {
           <p style={{ fontSize: "18px" }}>
             Please send us your questions to help you out!
           </p>
-          <Form>
+          <Form
+            validated={validated}
+            onSubmit={handleSubmit}
+          >
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 style={{ width: "600px" }}
                 type="email"
-                value={emailValue}
+                value={email}
                 onChange={handleEmailChange}
                 required
                 placeholder="Enter email"
