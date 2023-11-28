@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/ParkEasy.png";
 import axios from "axios";
 import { backendUrl } from "../API/Api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Support() {
   const [email, setEmail] = useState("");
@@ -34,26 +36,25 @@ function Support() {
     setValidated(true);
 
     try {
-
       const response = await axios.post(`${backendUrl}/support/create`, {
         email: email,
-        phoneValue: phoneValue,
-        messageValue: messageValue
+        phone: phoneValue,
+        message: messageValue,
       });
-
-      const token = response.data.token;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("email", email);
-      localStorage.setItem("username", response.data.username);
-
+      toast.success("Successfully Submitted! Our team will contact you soon.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       setTimeout(() => {
         navigate("/");
-      }, 1000);
+      }, 2000);
     } catch (error) {
+      toast.error("Error while Submitting!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.error("Login failed:", error);
-
-    } 
+    }
   };
 
   return (
@@ -77,6 +78,7 @@ function Support() {
           </Nav>
         </Container>
       </Navbar>
+      <ToastContainer />
       <div>
         <div style={{ margin: "20px" }}>
           <h1>Contact Us</h1>
@@ -84,10 +86,7 @@ function Support() {
           <p style={{ fontSize: "18px" }}>
             Please send us your questions to help you out!
           </p>
-          <Form
-            validated={validated}
-            onSubmit={handleSubmit}
-          >
+          <Form validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email address</Form.Label>
               <Form.Control
