@@ -34,7 +34,7 @@ const FAQs = () => {
         },
         {
           question: 'How can I provide feedback on your products or services?',
-          answer: 'We welcome your feedback! You can provide feedback by filling out the contact form on our website or by emailing us directly. We appreciate your input.',
+          answer: 'We welcome your feedback! You can provide feedback by going to the support page on our website and by filling out the contact us form. We appreciate your input.',
         },
       ],
     },
@@ -43,43 +43,22 @@ const FAQs = () => {
       questions: [
         {
           question: 'How do I rent my parking spot?',
-          answer: 'Once you have registered an account with Parking For Me, click on List Your Spot button from the main menu and follow the instructions to enter your parking spot information. Once you have submitted your address, a ParkEasy staff member will either approve your listing or contact you if any additional information is required. Once your spot is listed, it will be available for rent.',
+          answer: 'Once you have registered an account with ParkEasy, click on List Your Parking Spot button from the home page and follow the instructions to enter your parking spot information. Once you have submitted your address, a ParkEasy staff member will either approve your listing or contact you if any additional information is required. Once your spot is listed, it will be available for rent.',
         },
         {
           question: 'When do I receive my payments and how do I get paid?',
           answer: 'It is the owners responsibility to check the payment details with the customer. Each customer shall be solely responsible for checking the details before sharing any confidential information and getting into a contract. The ParkEasy management will not accept responsibility for any loss or damage. We recommend not to accept cashier/certified checks or money orders. Also do not give out financial info (bank account, social security, PayPal account, etc.) unless you are 100% sure that it is not a scam.',
         },
         {
-          question: 'How much does Parking For Me charge for listing my spot?',
+          question: 'How much does ParkEasy charge for listing my spot?',
           answer: 'Nothing! Listing is completely free. The rates that you choose to charge for your parking spot are the amounts you will receive when someone books your space.',
         },
         {
           question: 'How do I get parking spot access information to a driver?',
-          answer: 'Whenever a renter will be interested in your parking spot, he/she will send you a request via our online contact form. You can then respond to that email or contact the renter on the phone number provided in the email and give them the detailed instructions. To preserve privacy, we will not display your personal information online.',
+          answer: 'Whenever a renter will be interested in your parking spot, they will send you a request via our online message system. You can then respond to them via messages, email or contact the renter on the phone number provided in the email and give them the detailed instructions. To preserve privacy, we will not display your personal information online.',
         },
       ],
     },
-    // {
-    //   category: 'Third party attributions',
-    //   questions: [
-    //     {
-    //       question: 'Are there any ongoing promotions?',
-    //       answer: 'Yes, we currently have a summer sale with discounts up to 40% off on selected packages.',
-    //     },
-    //     {
-    //       question: 'How can I redeem a discount code?',
-    //       answer: 'During the checkout process, you can enter your discount code in the designated field and click "Apply" to redeem it.',
-    //     },
-    //     {
-    //       question: 'Are there any upcoming sales or promotions?',
-    //       answer: 'We frequently run sales and promotions throughout the year. To stay updated, sign up for our newsletter or follow us on social media',
-    //     },
-    //     {
-    //       question: 'Can I combine multiple discount codes?',
-    //       answer: 'In general, our system allows the use of only one discount code per order. Multiple discount codes cannot be combined.',
-    //     },
-    //   ],
-    // },
   ];
 
   return (
