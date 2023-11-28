@@ -6,7 +6,7 @@ const feedbackService = {
       const newFeedback = await Feedback.create({ name, comment, stars, postId });
       return newFeedback;
     } catch (error) {
-      console.error(error);
+      //console.error(error);
       throw new Error('Failed to create feedback');
     }
   },
@@ -17,7 +17,7 @@ const feedbackService = {
       // console.log(feedback);
       return feedback;
     } catch (error) {
-      console.error(error);
+      //console.error(error);
       throw new Error('Failed to get feedback');
     }
   },
