@@ -34,6 +34,7 @@ const Feedback = ({ showModal, handleClose, postId }) => {
       {showModal && (
         <div className="blur-container">
           <Modal
+            id="2"
             show={showModal}
             onHide={handleClose}
             backdrop="static"
@@ -50,7 +51,15 @@ const Feedback = ({ showModal, handleClose, postId }) => {
                 <p>No reviews available.</p>
               ) : (
                 reviews?.map((review, index) => (
-                  <div key={index} style={{ marginBottom: "10px" }}>
+                  <div
+                    key={index}
+                    style={{
+                      marginBottom: "20px",
+                      backgroundColor: "rgba(144, 238, 144, 0.3)",
+                      padding: "10px",
+                      borderRadius: "8px",
+                    }}
+                  >
                     <h6>Name: {review.name}</h6>
                     <h6>Comments: {review.comment}</h6>
                     <h6>

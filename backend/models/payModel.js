@@ -1,10 +1,12 @@
-
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema({
-  // Define your payment schema here
+  price: Number,
+  address: String,
+  userName: String,
+  to: String,
 });
 
-const Payment = mongoose.model('Payment', paymentSchema);
+const Payment = mongoose.model("Payment", paymentSchema);
 
 module.exports = Payment;
