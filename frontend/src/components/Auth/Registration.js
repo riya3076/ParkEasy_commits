@@ -1,16 +1,16 @@
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import {
+  Form,
+  Button,
+  Image,
   Nav,
   Navbar,
-  NavDropdown,
   Container,
-  Image,
+  Spinner,
   Toast,
 } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import logo from "../assets/ParkEasy.png";
 import backgroundImage from "../assets/Background.png";
 import { backendUrl } from "../API/Api";
@@ -22,6 +22,7 @@ const Register = () => {
   const [validated, setValidated] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -36,6 +37,8 @@ const Register = () => {
     }
 
     try {
+      setLoading(true);
+
       const response = await axios.post(`${backendUrl}/auth/register`, {
         email,
         username,
@@ -56,6 +59,8 @@ const Register = () => {
       console.error("Registration error:", error);
       setIsRegistrationSuccess(false);
       setShowToast(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -145,8 +150,19 @@ const Register = () => {
           />
         </Form.Group>
 
-        <Button style={{ marginTop: "10px" }} variant="success" type="submit">
-          Register
+        <Button
+          style={{ marginTop: "10px" }}
+          variant="success"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? (
+            <Spinner animation="border" role="status" variant="light">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          ) : (
+            "Register"
+          )}
         </Button>
       </Form>
 
@@ -167,7 +183,7 @@ const Register = () => {
         <Toast.Body>
           {isRegistrationSuccess
             ? "Registration successful!"
-            : "User already exits or server error!"}
+            : "User already exists or server error!"}
         </Toast.Body>
       </Toast>
     </>

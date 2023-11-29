@@ -43,5 +43,5 @@ html {
 }
 
 .modal-backdrop {
-  --bs-backdrop-bg: rgb(0 0 0 / 17%) !important;
+  --bs-backdrop-bg: rgb(0 0 0 / 10%) !important;
 }

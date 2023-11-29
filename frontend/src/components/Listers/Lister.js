@@ -49,7 +49,6 @@ const Lister = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
     window.localStorage.clear();
-    window.location.reload();
     navigate("/login");
   };
 
