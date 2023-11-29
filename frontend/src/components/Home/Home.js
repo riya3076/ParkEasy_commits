@@ -1,9 +1,16 @@
-import React from "react";
-import { Navbar, Nav, Button, Form, Image } from "react-bootstrap";
+import React, { useState } from "react";
+import { Navbar, Nav, Button, Image } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/ParkEasy.png";
 import backgroundImage from "../assets/Background.png";
+import {
+  NovuProvider,
+  PopoverNotificationCenter,
+  NotificationBell,
+} from "@novu/notification-center";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -13,6 +20,14 @@ const Home = () => {
     window.location.reload();
     navigate("/login");
   };
+
+  const [description, setDescription] = useState("");
+
+  function onNotificationClick(message) {
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }
 
   return (
     <div
@@ -41,12 +56,59 @@ const Home = () => {
                 <Nav.Link href="/">Home</Nav.Link>
               </Nav>
               <Nav>
-                <Nav.Link href="/support">Support</Nav.Link>
-                <Nav.Link href="/faq">FAQ</Nav.Link>
+                <NovuProvider
+                  subscriberId={window.localStorage.getItem("email")}
+                  styles={{
+                    bellButton: {
+                      root: {
+                        svg: {
+                          color: "#FFFFFF8C",
+                        },
+                      },
+                    },
+                  }}
+                  applicationIdentifier={"nS45TrQEHee_"}
+                  initialFetchingStrategy={{
+                    fetchNotifications: true,
+                    fetchUserPreferences: true,
+                  }}
+                >
+                  <PopoverNotificationCenter
+                    colorScheme="light"
+                    onNotificationClick={onNotificationClick}
+                    listItem={(notification) => (
+                      <div>{notification?.payload?.description}</div>
+                    )}
+                  >
+                    {({ unseenCount }) => (
+                      <Nav.Link>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </Nav.Link>
+                    )}
+                  </PopoverNotificationCenter>
+                </NovuProvider>
+                <Nav.Link onClick={() => navigate("/paymenthistory")}>
+                  Payments
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/messages")}>
+                  Messages
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
                 <Navbar.Text>
-                  {window.localStorage.getItem("email")}
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  {window.localStorage.getItem("username")}
                 </Navbar.Text>
-                <Nav.Link onClick={handleLogout} href="/login">
+                <Nav.Link onClick={handleLogout}>
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    style={{ marginRight: "0.5rem" }}
+                  />
                   Logout
                 </Nav.Link>
               </Nav>
@@ -76,7 +138,7 @@ const Home = () => {
             <Button
               variant="success"
               size="lg"
-              onClick={() => navigate("/lister")}
+              onClick={() => navigate("/finder")}
               style={{ marginRight: "10px" }}
             >
               FIND PARKING SPOT
@@ -106,10 +168,14 @@ const Home = () => {
                 <Nav.Link href="/">Home</Nav.Link>
               </Nav>
               <Nav>
-                <Nav.Link href="/support">Support</Nav.Link>
-                <Nav.Link href="/faq">FAQ</Nav.Link>
-                <Nav.Link href="/register">Sign Up</Nav.Link>
-                <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Nav.Link onClick={() => navigate("/register")}>
+                  Sign Up
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
               </Nav>
             </Container>
           </Navbar>

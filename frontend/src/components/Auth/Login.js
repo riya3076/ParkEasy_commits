@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/ParkEasy.png";
+import { backendUrl } from "../API/Api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post("http://localhost:9000/auth/login", {
+      const response = await axios.post(`${backendUrl}/auth/login`, {
         email: email,
         password: password,
       });
@@ -65,66 +66,71 @@ const Login = () => {
     <>
       <Navbar bg="success" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="/">
+          <Navbar.Brand onClick={() => navigate("/")}>
             <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
             ParkEasy
           </Navbar.Brand>
+          <Nav className="me-auto">
+            <Nav.Link href="/">Home</Nav.Link>
+          </Nav>
           <Nav className="me-auto"></Nav>
           <Nav>
-            <Nav.Link href="/support">Support</Nav.Link>
-            <Nav.Link href="/faq">FAQ</Nav.Link>
-            <Nav.Link href="/register">Sign Up</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
+            <Nav.Link onClick={() => navigate("/support")}>Support</Nav.Link>
+            <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+            <Nav.Link onClick={() => navigate("/register")}>Sign Up</Nav.Link>
+            <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
-
-      <Form
-        style={{ marginTop: "20px", marginLeft: "20px" }}
-        validated={validated}
-        onSubmit={handleSubmit}
+      <Container
+        className="d-flex justify-content-center align-items-center mt-3"
+        style={{ width: "80%" }}
       >
-        <h2 style={{ color: "#0f6022", fontStyle: "oblique" }}>Login </h2>
-        <br />
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label style={{ color: "#348e49" }}>Email address</Form.Label>
-          <Form.Control
-            style={{ width: "500px" }}
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            style={{ width: "500px" }}
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Button
-          style={{ marginTop: "10px" }}
-          variant="success"
-          type="submit"
-          disabled={loading}
+        <Form
+          validated={validated}
+          onSubmit={handleSubmit}
+          style={{ width: "45%" }}
         >
-          {loading ? (
-            <Spinner animation="border" role="status" variant="light">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          ) : (
-            "Login"
-          )}
-        </Button>
-      </Form>
+          <h2 style={{ color: "#0f6022", fontStyle: "oblique" }}>Login </h2>
+          <br />
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label style={{ color: "#348e49" }}>Email address</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Button
+            style={{ marginTop: "10px" }}
+            variant="success"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? (
+              <Spinner animation="border" role="status" variant="light">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            ) : (
+              "Login"
+            )}
+          </Button>
+        </Form>
+      </Container>
 
       <Toast
         show={showToast}

@@ -41,3 +41,7 @@ html {
     transform: rotate(360deg);
   }
 }
+
+.modal-backdrop {
+  --bs-backdrop-bg: rgb(0 0 0 / 10%) !important;
+}

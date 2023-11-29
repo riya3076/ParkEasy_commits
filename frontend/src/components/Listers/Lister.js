@@ -10,6 +10,7 @@ import {
   Button,
   Spinner,
 } from "react-bootstrap";
+
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import PlacesAutocomplete, {
   geocodeByAddress,
@@ -18,6 +19,21 @@ import PlacesAutocomplete, {
 import axios from "axios";
 import logo from "../assets/ParkEasy.png";
 import "../Listers/CSS/Lister.css";
+import { storage } from "./Firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { backendUrl } from "../API/Api";
+import {
+  NovuProvider,
+  PopoverNotificationCenter,
+  NotificationBell,
+} from "@novu/notification-center";
+
+import { faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router";
+
 const libraries = ["places"];
 
 const Lister = () => {
@@ -29,15 +45,32 @@ const Lister = () => {
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("daily");
 
+  const [image, setImage] = useState(null);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    window.localStorage.clear();
+    navigate("/login");
+  };
+
+  const [description, setDescription] = useState("");
+
+  function onNotificationClick(message) {
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyCCW8GIa8MXFBzdmKFWJs5PL77pHIOtJaU",
     libraries,
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const userName = localStorage.getItem("username");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
-    // Simulate loading time, you can replace this with your actual loading logic
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
@@ -56,7 +89,6 @@ const Lister = () => {
       lng: e.latLng.lng(),
     });
 
-    // Reverse geocode the clicked location to get the address
     geocodeByAddress(`${e.latLng.lat()}, ${e.latLng.lng()}`)
       .then((results) => setAddress(results[0].formatted_address))
       .catch((error) => console.error("Error reverse geocoding:", error));
@@ -76,7 +108,6 @@ const Lister = () => {
       lng: e.latLng.lng(),
     });
 
-    // Reverse geocode the dragged location to get the address
     geocodeByAddress(`${e.latLng.lat()}, ${e.latLng.lng()}`)
       .then((results) => setAddress(results[0].formatted_address))
       .catch((error) => console.error("Error reverse geocoding:", error));
@@ -89,7 +120,6 @@ const Lister = () => {
   const handleSelect = async (selectedAddress) => {
     setAddress(selectedAddress);
 
-    // Geocode the selected address to get the coordinates
     try {
       const results = await geocodeByAddress(selectedAddress);
       const latLng = await getLatLng(results[0]);
@@ -100,35 +130,59 @@ const Lister = () => {
     }
   };
 
+  function generateImageId() {
+    const timestamp = new Date().getTime();
+    const randomString = Math.random().toString(36).substring(2);
+
+    const imageId = `${timestamp}-${randomString}`;
+    return imageId;
+  }
+
   const handleSubmit = async () => {
-    // Prepare data for the API call
-    const data = {
-      address,
-      coordinates: selectedLocation,
-      totalSpots,
-      price,
-      duration,
-      // Add more fields as needed
-    };
-
     try {
-      console.log(data);
-      // Make an API call using Axios
-      const response = await axios.post("YOUR_API_ENDPOINT", data);
+      setIsSubmitting(true);
+      const imageId = generateImageId();
+      const imageRef = ref(storage, `images/${imageId}`);
+      await uploadBytes(imageRef, image);
 
+      const imageUrl = await getDownloadURL(imageRef);
+      console.log(imageUrl);
+
+      const data = {
+        address,
+        coordinates: selectedLocation,
+        totalSpots,
+        price,
+        duration,
+        imgUrl: imageUrl,
+        userName,
+        email,
+      };
+      console.log(data);
+      const response = await axios.post(
+        `${backendUrl}/api/parking-spots`,
+        data
+      );
+      toast.success("Spot posted!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.log("API Response:", response.data);
 
-      // Reset form after successful submission
       setAddress("");
       setTotalSpots("");
       setPrice("");
       setDuration("daily");
       setSelectedLocation(null);
-
-      // Optionally, you can redirect the user to a success page or show a success message
+      setImage(null);
     } catch (error) {
+      toast.error("Server error!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.error("Error submitting form:", error);
-      // Handle error (e.g., show an error message to the user)
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -136,27 +190,165 @@ const Lister = () => {
   if (!isLoaded || isLoading) {
     return (
       <>
-        <Navbar bg="success" data-bs-theme="dark">
-          <Container fluid>
-            <Navbar.Brand href="/">
-              <Image
-                src={logo}
-                style={{ width: "40px", height: "40px" }}
-                fluid
-              />{" "}
-              ParkEasy
-            </Navbar.Brand>
-            <Nav className="me-auto"></Nav>
-            <Nav>
-              <Nav.Link href="/support">Support</Nav.Link>
-              <Nav.Link href="/faq">FAQ</Nav.Link>
-            </Nav>
-          </Container>
-        </Navbar>
-        <div className="d-flex justify-content-center align-items-center vh-100">
-          <Spinner animation="border" role="status" style={{ color: "green" }}>
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+        {window.localStorage.getItem("email") ? (
+          <>
+            <Navbar bg="success" data-bs-theme="dark">
+              <Container>
+                <Navbar.Brand href="/">
+                  <Image
+                    src={logo}
+                    style={{ width: "40px", height: "40px" }}
+                    fluid
+                  ></Image>{" "}
+                  ParkEasy
+                </Navbar.Brand>
+                <Nav className="me-auto">
+                  <Nav.Link href="/">Home</Nav.Link>
+                </Nav>
+                <Nav>
+                  <NovuProvider
+                    subscriberId={window.localStorage.getItem("email")}
+                    styles={{
+                      bellButton: {
+                        root: {
+                          svg: {
+                            color: "#FFFFFF8C",
+                          },
+                        },
+                      },
+                    }}
+                    applicationIdentifier={"nS45TrQEHee_"}
+                    initialFetchingStrategy={{
+                      fetchNotifications: true,
+                      fetchUserPreferences: true,
+                    }}
+                  >
+                    <PopoverNotificationCenter
+                      colorScheme="light"
+                      onNotificationClick={onNotificationClick}
+                      listItem={(notification) => (
+                        <div>{notification?.payload?.description}</div>
+                      )}
+                    >
+                      {({ unseenCount }) => (
+                        <Nav.Link>
+                          <NotificationBell unseenCount={unseenCount} />
+                        </Nav.Link>
+                      )}
+                    </PopoverNotificationCenter>
+                  </NovuProvider>
+                  <Nav.Link onClick={() => navigate("/paymenthistory")}>
+                    Payments
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/messages")}>
+                    Messages
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/support")}>
+                    Support
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                  <Navbar.Text>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: "0.5rem" }}
+                    />
+                    {window.localStorage.getItem("username")}
+                  </Navbar.Text>
+                  <Nav.Link onClick={handleLogout}>
+                    <FontAwesomeIcon
+                      icon={faSignOutAlt}
+                      style={{ marginRight: "0.5rem" }}
+                    />
+                    Logout
+                  </Nav.Link>
+                </Nav>
+              </Container>
+            </Navbar>
+          </>
+        ) : (
+          <>
+            <Navbar bg="success" data-bs-theme="dark">
+              <Container>
+                <Navbar.Brand href="/">
+                  <Image
+                    src={logo}
+                    style={{ width: "40px", height: "40px" }}
+                    fluid
+                  ></Image>{" "}
+                  ParkEasy
+                </Navbar.Brand>
+                <Nav className="me-auto">
+                  <Nav.Link href="/">Home</Nav.Link>
+                </Nav>
+                <Nav>
+                  <Nav.Link onClick={() => navigate("/support")}>
+                    Support
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                  <Nav.Link onClick={() => navigate("/register")}>
+                    Sign Up
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
+                </Nav>
+              </Container>
+            </Navbar>
+          </>
+        )}
+        <div class="loader">
+          <svg
+            class="car"
+            width="102"
+            height="40"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              transform="translate(2 1)"
+              stroke="#348e49"
+              fill="#348e49"
+              fill-rule="evenodd"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                class="car__body"
+                d="M47.293 2.375C52.927.792 54.017.805 54.017.805c2.613-.445 6.838-.337 9.42.237l8.381 1.863c2.59.576 6.164 2.606 7.98 4.531l6.348 6.732 6.245 1.877c3.098.508 5.609 3.431 5.609 6.507v4.206c0 .29-2.536 4.189-5.687 4.189H36.808c-2.655 0-4.34-2.1-3.688-4.67 0 0 3.71-19.944 14.173-23.902zM36.5 15.5h54.01"
+                stroke-width="3"
+              />
+              <ellipse
+                class="car__wheel--left"
+                stroke-width="3.2"
+                fill="#FFF"
+                cx="83.493"
+                cy="30.25"
+                rx="6.922"
+                ry="6.808"
+              />
+              <ellipse
+                class="car__wheel--right"
+                stroke-width="3.2"
+                fill="#FFF"
+                cx="46.511"
+                cy="30.25"
+                rx="6.922"
+                ry="6.808"
+              />
+              <path
+                class="car__line car__line--top"
+                d="M22.5 16.5H2.475"
+                stroke-width="3"
+              />
+              <path
+                class="car__line car__line--middle"
+                d="M20.5 23.5H.4755"
+                stroke-width="3"
+              />
+              <path
+                class="car__line car__line--bottom"
+                d="M25.5 9.5h-19"
+                stroke-width="3"
+              />
+            </g>
+          </svg>
         </div>
       </>
     );
@@ -164,20 +356,111 @@ const Lister = () => {
 
   return (
     <>
-      <Navbar bg="success" data-bs-theme="dark">
-        <Container fluid>
-          <Navbar.Brand href="/">
-            <Image src={logo} style={{ width: "40px", height: "40px" }} fluid />{" "}
-            ParkEasy
-          </Navbar.Brand>
-          <Nav className="me-auto"></Nav>
-          <Nav>
-            <Nav.Link href="/support">Support</Nav.Link>
-            <Nav.Link href="/faq">FAQ</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
-
+      {window.localStorage.getItem("email") ? (
+        <>
+          <Navbar bg="success" data-bs-theme="dark">
+            <Container>
+              <Navbar.Brand href="/">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                ></Image>{" "}
+                ParkEasy
+              </Navbar.Brand>
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
+              <Nav>
+                <NovuProvider
+                  subscriberId={window.localStorage.getItem("email")}
+                  styles={{
+                    bellButton: {
+                      root: {
+                        svg: {
+                          color: "#FFFFFF8C",
+                        },
+                      },
+                    },
+                  }}
+                  applicationIdentifier={"nS45TrQEHee_"}
+                  initialFetchingStrategy={{
+                    fetchNotifications: true,
+                    fetchUserPreferences: true,
+                  }}
+                >
+                  <PopoverNotificationCenter
+                    colorScheme="light"
+                    onNotificationClick={onNotificationClick}
+                    listItem={(notification) => (
+                      <div>{notification?.payload?.description}</div>
+                    )}
+                  >
+                    {({ unseenCount }) => (
+                      <Nav.Link>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </Nav.Link>
+                    )}
+                  </PopoverNotificationCenter>
+                </NovuProvider>
+                <Nav.Link onClick={() => navigate("/paymenthistory")}>
+                  Payments
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/messages")}>
+                  Messages
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Navbar.Text>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  {window.localStorage.getItem("username")}
+                </Navbar.Text>
+                <Nav.Link onClick={handleLogout}>
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  Logout
+                </Nav.Link>
+              </Nav>
+            </Container>
+          </Navbar>
+        </>
+      ) : (
+        <>
+          <Navbar bg="success" data-bs-theme="dark">
+            <Container>
+              <Navbar.Brand href="/">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                ></Image>{" "}
+                ParkEasy
+              </Navbar.Brand>
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
+              <Nav>
+                <Nav.Link onClick={() => navigate("/support")}>
+                  Support
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/faq")}>FAQ</Nav.Link>
+                <Nav.Link onClick={() => navigate("/register")}>
+                  Sign Up
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
+              </Nav>
+            </Container>
+          </Navbar>
+        </>
+      )}
+      <ToastContainer />
       <Row className="justify-content-md-center mt-3">
         <Col xs={12} md={8}>
           <Form.Group controlId="formAddress" className="mt-3">
@@ -293,14 +576,27 @@ const Lister = () => {
             </Form.Select>
           </Form.Group>
 
-          {/* Add more form fields as needed (e.g., pictures, description) */}
+          <Form.Group controlId="formImage" className="mb-3">
+            <Form.Label className="form-label">Upload Image:</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="form-input"
+            />
+          </Form.Group>
 
           <Button
             variant="primary"
             onClick={handleSubmit}
-            className="submit-button"
+            className="submit-button mb-3"
+            disabled={isSubmitting} // Disable the button while submitting
           >
-            Submit
+            {isSubmitting ? (
+              <Spinner animation="border" role="status" />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </Col>
       </Row>
