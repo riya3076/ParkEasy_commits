@@ -82,53 +82,55 @@ const Login = () => {
           </Nav>
         </Container>
       </Navbar>
-
-      <Form
-        style={{ marginTop: "20px", marginLeft: "20px" }}
-        validated={validated}
-        onSubmit={handleSubmit}
+      <Container
+        className="d-flex justify-content-center align-items-center mt-3"
+        style={{ width: "80%" }}
       >
-        <h2 style={{ color: "#0f6022", fontStyle: "oblique" }}>Login </h2>
-        <br />
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label style={{ color: "#348e49" }}>Email address</Form.Label>
-          <Form.Control
-            style={{ width: "500px" }}
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            style={{ width: "500px" }}
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Button
-          style={{ marginTop: "10px" }}
-          variant="success"
-          type="submit"
-          disabled={loading}
+        <Form
+          validated={validated}
+          onSubmit={handleSubmit}
+          style={{ width: "45%" }}
         >
-          {loading ? (
-            <Spinner animation="border" role="status" variant="light">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          ) : (
-            "Login"
-          )}
-        </Button>
-      </Form>
+          <h2 style={{ color: "#0f6022", fontStyle: "oblique" }}>Login </h2>
+          <br />
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label style={{ color: "#348e49" }}>Email address</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Button
+            style={{ marginTop: "10px" }}
+            variant="success"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? (
+              <Spinner animation="border" role="status" variant="light">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            ) : (
+              "Login"
+            )}
+          </Button>
+        </Form>
+      </Container>
 
       <Toast
         show={showToast}

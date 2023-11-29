@@ -183,66 +183,69 @@ function Support() {
         </>
       )}
       <ToastContainer />
-      <div>
-        <div style={{ margin: "20px" }}>
-          <h1>Contact Us</h1>
+      <div className="d-flex justify-content-center align-items-center">
+        <div>
+          <h1 style={{ color: "green", fontWeight: "bold" }}>Contact Us</h1>
           <br />
-          <p style={{ fontSize: "18px" }}>
+          <p style={{ fontSize: "18px", color: "green", fontWeight: "bold" }}>
             Please send us your questions to help you out!
           </p>
-          <Form validated={validated} onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                style={{ width: "600px" }}
-                type="email"
-                value={email}
-                onChange={handleEmailChange}
-                required
-                placeholder="Enter email"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="phone">
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                style={{ width: "600px" }}
-                type="tel"
-                required
-                minLength={10}
-                maxLength={10}
-                value={phoneValue}
-                onChange={handlePhoneChange}
-                placeholder="Enter Phone Number"
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="textarea">
-              <Form.Label>What's the issue?</Form.Label>
-              <Form.Control
-                style={{ width: "600px", height: "200px" }}
-                as="textarea"
-                required
-                rows={3}
-                value={messageValue}
-                onChange={handleMessageChange}
-                placeholder="Describe your problem you are facing"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check
-                type="checkbox"
-                required
-                label="I agree to be contacted by ParkEasy"
-              />
-            </Form.Group>
-            <Button variant="success" type="submit">
-              Submit
-            </Button>
-          </Form>
+          <Container>
+            <Form
+              validated={validated}
+              onSubmit={handleSubmit}
+              style={{ width: "100%" }}
+            >
+              <Form.Group className="mb-3" controlId="email">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  required
+                  placeholder="Enter email"
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="phone">
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                  type="tel"
+                  required
+                  minLength={10}
+                  maxLength={10}
+                  value={phoneValue}
+                  onChange={handlePhoneChange}
+                  placeholder="Enter Phone Number"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="textarea">
+                <Form.Label>What's the issue?</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  required
+                  rows={3}
+                  value={messageValue}
+                  onChange={handleMessageChange}
+                  placeholder="Describe your problem you are facing"
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicCheckbox">
+                <Form.Check
+                  type="checkbox"
+                  required
+                  label="I agree to be contacted by ParkEasy"
+                />
+              </Form.Group>
+              <Button variant="success" type="submit">
+                Submit
+              </Button>
+            </Form>
+          </Container>
         </div>
       </div>
     </>
